@@ -1,0 +1,39 @@
+.p-button {
+  
+    /* Primary Button */
+    --p-button-primary-color: #FFFFFF;
+    --p-button-primary-background: #c52b42;
+    --p-button-primary-hover-background: #b6142c;
+    --p-button-primary-active-background:#DA1856;
+    --p-button-primary-active-border-color:#DA1856; 
+    --p-button-primary-border-color: #DA1856;
+    --p-button-primary-hover-border-color:#9A1B3D;
+  
+    /* Accent or Info Button */
+    --p-button-info-color: #FFFFFF;
+    --p-button-info-background: #378ED1;
+    --p-button-info-hover-background: #2656A3;
+    --p-button-info-active-background:#2656A3;
+    --p-button-info-active-border-color:#2656A3;
+    --p-button-info-border-color: #3F70B7;
+    --p-button-info-hover-border-color:#16428A;
+  
+    /* Secondary Button */
+    --p-button-secondary-color: #474B52;
+    --p-button-secondary-background:#EAECF0; 
+    --p-button-secondary-hover-background: #CBD0D9;
+    --p-button-secondary-active-background:#CBD0D9;
+    --p-button-secondary-active-border-color:#CBD0D9;
+    --p-button-secondary-border-color: #E0E3E8;
+    --p-button-secondary-hover-border-color:#CBD0D9;
+  
+    /* Danger Button */
+    --p-button-danger-color: white;
+    --p-button-danger-background: #DD1E1E;
+    --p-button-danger-hover-background: #991B1B;
+    --p-button-danger-active-background:#991B1B;
+    --p-button-danger-active-border-color:#991B1B;
+    --p-button-danger-border-color: #B91C1C;
+    --p-button-danger-hover-border-color:#7F1D1D;
+  
+  }

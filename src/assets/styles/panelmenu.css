@@ -1,0 +1,23 @@
+.p-panelmenu {
+  --p-panelmenu-panel-background: transparent;
+  --p-panelmenu-panel-border-color: transparent;
+  --p-panelmenu-item-color: rgb(34, 27, 27);
+  /* --p-panelmenu-item-focus-background: #b6142c; */
+  /* --p-panelmenu-item-focus-color: white; */
+  --p-panelmenu-submenu-icon-focus-color: #b6142c;
+  --p-panelmenu-item-icon-color: #BEBEBE;
+  --p-panelmenu-item-padding: 1rem;
+  /* --p-panelmenu-panel-border-radius: 6px;
+  --p-panelmenu-submenu-indent: 5px; */
+  --p-panelmenu-gap: 2px;
+
+  }
+
+/** CSS Design in login error response */
+.p-panel{
+  /* --p-panel-border-color: #DD1E1E; */
+  /* --p-panel-background: #290D3C; */
+  /* --p-panel-color: #F2F4F7; */
+  /* --p-panel-header-color: #F2F4F7; */
+  /* --p-panel-border-radius: 10px; */
+}

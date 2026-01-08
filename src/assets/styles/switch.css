@@ -1,0 +1,8 @@
+.p-toggleswitch {
+    --p-toggleswitch-checked-hover-background: #2373af;
+    --p-toggleswitch-checked-background: #378ED1;
+}
+.p-checkbox {
+    --p-checkbox-checked-hover-background: #2373af;
+    --p-checkbox-checked-background: #378ED1;
+}

@@ -1,0 +1,18 @@
+
+.p-chip{
+    --p-chip-padding-x: 6px;
+    --p-chip-padding-y: 4px;
+    --p-chip-border-radius: 6px;
+    --p-chip-background: transparent;
+}
+.online-chip {
+    color: #17B26A !important;
+}
+
+.offline-chip {
+    color: #667085 !important;
+}
+
+.deactivate-chip-label {
+    color: rgb(107 114 128 / var(--tw-text-opacity, 1)) !important;
+}

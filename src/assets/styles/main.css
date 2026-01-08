@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer tailwind-base, primevue, tailwind-utilities;
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
+
+@font-face {
+  font-family: 'Acari Sans';
+  src: url('../acari-sans/AcariSans-Regular.otf') format('opentype'),
+       url('../acari-sans/AcariSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Acari Sans';
+  src: url('../acari-sans/AcariSans-Bold.otf') format('opentype'),
+       url('../acari-sans/AcariSans-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+
+:root {
+
+    font-family: 'Acari Sans', sans-serif;
+    color-scheme: light !important;
+    min-height: 100vh; 
+    /* background: radial-gradient(39.61% 45.31% at 53.68% 50%, #382A5D 0%, #e81616 100%); */
+    /* background: linear-gradient(to bottom, #ffffff 0%, #ffffff 60%, #fd0106 100%); */
+    background: #b6142c;
+    
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+}

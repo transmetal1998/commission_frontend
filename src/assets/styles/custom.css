@@ -1,0 +1,42 @@
+.side-panel {
+    /* border-top-right-radius: 24px;   */
+    background: #fefefe;
+}
+.header-custom {
+    border-bottom: 1px solid #E0E3E8 !important;
+}
+.new-user-dialog {
+    width: 477px;
+    max-width: 640px;
+}
+.tag-role {
+    border: 1px solid #CBD0D9 !important; 
+    background: transparent  !important; 
+    color: #474B52 !important;
+}
+
+/** Styles in the user management dialog*/
+
+.user-manage-dialog {
+    width: 400px; 
+    height: 228px; 
+    max-width: 400px; 
+    border-radius: 12px; 
+    padding: 1.2rem;
+}
+
+/** Custom CSS for all input, select field */ 
+
+/* input[type="text"]:focus, 
+.p-inputtext:focus {
+    border: 2px solid #60A7DB !important;
+} */
+
+select:focus, 
+.p-select.p-focus {
+    border: 2px solid #60A7DB !important;
+}
+
+.p-textarea:enabled:focus{
+    border: 2px solid #60A7DB !important;
+}

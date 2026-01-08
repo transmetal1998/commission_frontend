@@ -1,0 +1,7 @@
+.p-checkbox{
+    --p-checkbox-checked-background: #378ED1;
+    --p-checkbox-checked-hover-background: #378ED1;
+    --p-checkbox-checked-border-color: #378ED1;
+    --p-checkbox-checked-hover-border-color: #378ED1;
+    --p-checkbox-checked-focus-border-color: #378ED1;
+}
