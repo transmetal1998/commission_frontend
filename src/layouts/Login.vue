@@ -26,7 +26,7 @@
       </div>
          <div class="text-center" >
           <h2 class="text-xl sm:text-2xl font-gray text-gray-500 tracking-tight uppercase mt-3 " >
-    Login
+    Login Account
   </h2>
           <Transition name="fade">
             <div v-if="failedAttempts > 0" class="inline-flex items-center gap-1 mt-3 px-3 py-1 bg-red-50 text-red-600 rounded-full border border-red-100">
