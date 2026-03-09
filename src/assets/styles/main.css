@@ -38,7 +38,7 @@
     min-height: 100vh; 
     /* background: radial-gradient(39.61% 45.31% at 53.68% 50%, #382A5D 0%, #e81616 100%); */
     /* background: linear-gradient(to bottom, #ffffff 0%, #ffffff 60%, #fd0106 100%); */
-    background: #b6142c;
+    background:rgb(1, 1, 39);
     
     font-synthesis: none;
     text-rendering: optimizeLegibility;

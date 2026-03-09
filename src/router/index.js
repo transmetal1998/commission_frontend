@@ -14,30 +14,30 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const authTokenLocal = sessionStorage.getItem('authToken');
-  console.log('get the authtoken: ' + authTokenLocal);
-  const authStore = useAuthStore();
+  // const authTokenLocal = sessionStorage.getItem('authToken');
+  // console.log('get the authtoken: ' + authTokenLocal);
+  // const authStore = useAuthStore();
 
-  const isAuthenticated = authStore.isAuthenticated;
-  const checkValidProfile = await authStore.fetchProfile();
-  console.log(checkValidProfile);
+  // const isAuthenticated = authStore.isAuthenticated;
+  // const checkValidProfile = await authStore.fetchProfile();
+  // console.log(checkValidProfile);
      
-  if (authTokenLocal && !checkValidProfile) {
-    console.log('invalid token, logging out');
-    return next('/');
-  }
+  // if (authTokenLocal && !checkValidProfile) {
+  //   console.log('invalid token, logging out');
+  //   return next('/');
+  // }
   
-  if (to.path === '/' && isAuthenticated) {
-    console.log('already authenticated, redirecting to dashboard');
-    return next('/dashboard');
-  } else if (!isAuthenticated && to.meta.requiresAuth) {
-    console.log('not authenticated, redirecting to login');
-    return next('/');
-  } else if (to.path === '/' && authTokenLocal) {
-    console.log('has token, validating profile');
-    authStore.logout();
-    return next();
-  }
+  // if (to.path === '/' && isAuthenticated) {
+  //   console.log('already authenticated, redirecting to dashboard');
+  //   return next('/dashboard');
+  // } else if (!isAuthenticated && to.meta.requiresAuth) {
+  //   console.log('not authenticated, redirecting to login');
+  //   return next('/');
+  // } else if (to.path === '/' && authTokenLocal) {
+  //   console.log('has token, validating profile');
+  //   authStore.logout();
+  //   return next();
+  // }
 
   return next();
 

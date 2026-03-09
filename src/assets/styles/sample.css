@@ -1,0 +1,98 @@
+.dashboard-page {
+  padding: 20px;
+  background-color: #fcfcfc;
+}
+
+/* Header Row for Title and Button */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  max-width: 1200px;
+}
+
+
+
+
+/* Flex Container for List and Card */
+.content-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  max-width: 1200px;
+}
+
+/* Left Listbox - Fixed width, scrollable */
+.listbox-container {
+  width: 300px;
+  height: calc(100vh - 180px);
+  padding: 10px;
+  background-color: #e0dbdb; /* Matching your requested beige */
+  background-color: #b9b1b1; /* Matching your requested beige */
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Right Detail Card - Beige background, fills remaining space */
+.details-view.beige-card {
+  flex: 1; /* Takes up the rest of the horizontal space */
+  height: calc(100vh - 180px);
+  background-color: #e0dbdb; /* Matching your requested beige */
+  border: 1px solid #ecebeb;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.placeholder-content {
+  color: #888;
+  font-size: 14px;
+}
+
+/* List Card Styling */
+.list-card {
+  position: relative;
+  list-style: none;
+  padding: 15px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background-color: #e0dbdb; /* Matching your requested beige */
+  border: 1px solid #b9b1b1;
+  font-size: 13px;
+}
+
+.status-completed { background-color: #FAF9F3; }
+.status-pending { background-color: #C6011F; color: #FFFFFF !important; }
+.status-pending strong { color: #FFFFFF; }
+
+.badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.status-completed .badge { background-color: #00E640; color: white; }
+.status-pending .badge { background-color: #FAF9F3; color: #333; }
+
+.btn-new-po {
+  background-color: #c6011f;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Custom Scrollbar */
+.listbox-container::-webkit-scrollbar { width: 5px; }
+.listbox-container::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }

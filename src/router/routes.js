@@ -46,11 +46,17 @@ const generateRoutes = (moduleStore) => {
           meta: { requiresAuth: true },
         },
         {
-          path: '/dashboard',
-          component: () => import('../pages/general/DashboardPage.vue'),
-          meta: { requiresAuth: true },
+          path: '/canvasCost',
+          component: () => import('../pages/canvasCost/canvasCostPage.vue'),
+          // meta: { requiresAuth: true },
         },
-        
+        {
+          path: '/salescore/service',
+          component: () => import('../pages/salesCore/service.vue'),
+          // meta: { requiresAuth: true },
+        },
+          
+    
       ],
     },
   ];

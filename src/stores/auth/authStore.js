@@ -7,6 +7,7 @@ export const useAuthStore = defineStore('auth', {
         loading: false,
         profile: null,
         users: [],
+        user_list: []
     }),
     getters: {
         isAuthenticated (state) {
@@ -37,10 +38,24 @@ export const useAuthStore = defineStore('auth', {
             
             }
         },
+        async fetchUserList() {
+            try {
+
+                const response = await api.get('/Ad/users');
+                this.user_list = response.data;
+                return true;
+
+            } catch (err) {
+                
+                this.token = null;
+                return false;
+            
+            }
+        },
         async login(data) {
             try {
                 /** For API login and set the auth token */
-                const response = await api.post('/user/login', {
+                const response = await api.post('/Auth/login', {
                     username: data.username,
                     password: data.password,
                 });
