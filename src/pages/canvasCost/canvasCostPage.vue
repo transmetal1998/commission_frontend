@@ -96,6 +96,174 @@
 </div>
     </div>
 
+<Dialog v-model:visible="visibleComputation" modal header="Computation" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+    
+<div class="flex gap-4">
+<div class="w-2/3">
+        <div>
+            <small>Product Code</small>
+            <InputGroup>
+                <InputText placeholder="Enter Item Number" 
+                v-model="productCode" 
+                type="text" 
+                class="w-full" 
+                size="small"/>
+                <InputGroupAddon>
+                    <Button icon="pi pi-search" @click="checkProductCode" size="small" severity="secondary" variant="text"/>
+                </InputGroupAddon>
+            </InputGroup>
+        </div>
+        <div>
+            <small>Category</small>
+            <InputText v-model="category" type="text" class="w-full" size="small" />
+          </div>
+
+          <div>
+            <small>Quantity</small>
+            <InputText v-model="quantity" type="text" class="w-full" size="small" />
+          </div>
+
+          <div>
+            <small>Selling Price Unit VAT</small>
+            <InputText v-model="spUnitVat" @blur="computeRaw()" type="text" class="w-full" size="small" />
+          </div>
+
+          <div>
+          <small>Cost Unit VAT</small>
+              <InputText 
+                v-model="costRawUnitVat" 
+                @input="computeRaw()" 
+                type="text" 
+                size="small" 
+                class="w-full"
+              />
+          </div>
+         <div class="flex gap-2 mt-2">
+            <Button 
+              label="Compute" 
+              class="flex-1" 
+              size="small" 
+              severity="info" 
+              @click="visible = false" 
+            />
+            <Button 
+              label="Sync SAP" 
+              class="flex-1" 
+              size="small" 
+              severity="info" 
+              @click="visible = false" 
+            />
+          </div>
+          <div class="flex gap-2 mt-2">
+            <Button 
+              label="Save" 
+              class="flex-1" 
+              size="small" 
+              severity="primary" 
+              @click="visible = false" 
+            />
+          </div>
+          
+
+    </div>
+    <div class="w-full">
+
+          <div>
+            <small>Description</small> <br></br>
+            <small>{{ this.description }}</small>
+          </div>
+
+         <div>
+            <small>Quantity VAT</small>
+            <!-- <InputText v-model="spQtyVat" disabled type="text" class="w-full" size="small" /> -->
+            {{ spQtyVat }}
+          </div>
+
+          <div>
+            <small>Unit w/o VAT</small>
+            <InputText v-model="spUnitWoVat" disabled type="text" class="w-full" size="small" />
+          </div>
+
+          <div>
+            <small>Quantity w/o VAT</small>
+            <InputText v-model="spQtyWoVat" disabled type="text" class="w-full" size="small" />
+          </div>
+
+          <div>
+            <small>PO Reference Date</small>
+            <DatePicker v-model="poRefDate" class="w-full" size="small" />
+          </div>
+
+          <div>
+            <small>Recommended Supplier</small>
+            <InputText v-model="recommendedSupplier" type="text" class="w-full" size="small" />
+          </div>
+
+          <div class="mt-2">
+            <label for="" class="font-bold text-[#c52b42]">Cost</label>
+          </div>
+
+         <div class="flex gap-2">
+            <div class="flex-1 min-w-0">
+              <small>Unit VAT</small>
+              <InputText 
+                v-model="costRawUnitVat" 
+                @input="computeRaw()" 
+                type="text" 
+                size="small" 
+                class="w-full"
+              />
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <small class="text-[#c52b42]"><i>x12 months</i></small>
+              <InputText 
+                v-model="costUnitVat" 
+                disabled 
+                type="text" 
+                size="small" 
+                class="w-full"
+              />
+            </div>
+          </div>
+
+          <div>
+            <small>Quantity VAT</small>
+            <InputText v-model="costQuantityVat" disabled type="text" class="w-full" size="small" />
+          </div>
+
+          <div>
+            <small>Unit w/o VAT</small>
+            <InputText v-model="costUnitWoVat" disabled type="text" class="w-full" size="small" />
+          </div>
+
+          <div>
+            <small>Quantity w/o VAT</small>
+            <InputText v-model="costQuantityWoVat" readonly type="text" class="w-full" size="small" />
+          </div>
+
+          <div>
+            <small>Profit Margin w/o VAT</small>
+            <InputText v-model="profitMarginWoVat" disabled type="text" class="w-full" size="small" />
+          </div>
+
+           <div>
+            <small>Profit Margin VAT</small>
+            <InputText v-model="profitMargin" disabled type="text" class="w-full" size="small" />
+          </div>
+
+           <div>
+            <small>Target Selling Price VAT</small>
+            <InputText v-model="targetSellingPriceVat" disabled type="text" class="w-full" size="small" />
+          </div>
+
+    </div>
+</div>
+  
+  
+</Dialog>
+
+
     <Drawer v-model:visible="visibleRight" header="Product Details" position="right">
       <div>
         <div class="card flex flex-col gap-1">
@@ -116,10 +284,7 @@
 
           <div>
             <small>Description</small>
-            <!-- <InputText  disabled ref="nextTextbox" type="text"  /> -->
-            <Textarea v-model="description" class="w-full" disabled rows="5" cols="30" />
-
-
+            <InputText  disabled ref="nextTextbox" v-model="description" class="w-full" type="text"  />
           </div>
 
           <div>
@@ -138,7 +303,7 @@
 
           <div>
             <small>Unit VAT</small>
-            <InputText v-model="spUnitVat" type="text" class="w-full" size="small" />
+            <InputText v-model="spUnitVat" @blur="computeRaw()" type="text" class="w-full" size="small" />
           </div>
 
           <div>
@@ -170,9 +335,28 @@
             <label for="" class="font-bold text-[#c52b42]">Cost</label>
           </div>
 
-          <div>
-            <small>Unit VAT</small>
-            <InputText v-model="costUnitVat" type="text" class="w-full" size="small" />
+         <div class="flex gap-2">
+            <div class="flex-1 min-w-0">
+              <small>Unit VAT</small>
+              <InputText 
+                v-model="costRawUnitVat" 
+                @input="computeRaw()" 
+                type="text" 
+                size="small" 
+                class="w-full"
+              />
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <small class="text-[#c52b42]"><i>x12 months</i></small>
+              <InputText 
+                v-model="costUnitVat" 
+                disabled 
+                type="text" 
+                size="small" 
+                class="w-full"
+              />
+            </div>
           </div>
 
           <div>
@@ -187,7 +371,7 @@
 
           <div>
             <small>Quantity w/o VAT</small>
-            <InputText v-model="costQuantityWoVat" disabled type="text" class="w-full" size="small" />
+            <InputText v-model="costQuantityWoVat" readonly type="text" class="w-full" size="small" />
           </div>
 
           <div>
@@ -294,6 +478,7 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { useCanvasCost } from '@/stores/CanvasCost/CanvasCostStore';
+import { parse } from 'vue/compiler-sfc';
 
 
 export default {
@@ -303,6 +488,7 @@ export default {
       selectedOrderId: null,
       visibleRight: false,
       modalVisible: false,
+      visibleComputation: false,
       modalTitle: 'Create Sales Order',
       searchQuery: '',
       selectedStatus: 'All',
@@ -341,9 +527,10 @@ export default {
       poRefDate: '',
       recommendedSupplier: '',
       costUnitVat: '',
+      costRawUnitVat: '',
       costQuantityVat: 0.00,
       costUnitWoVat: 0.00,
-      costQuantityWoVat: 0.00,
+      costQuantityWoVat: 1,
       profitMarginWoVat: 0.00,
       profitMargin: 0.00,
       targetSellingPriceVat: 0.00
@@ -379,10 +566,62 @@ export default {
             postCanvasCostDetail: 'postCanvasCostDetail'
             
         }),
+    computeRaw() {
+
+        let _SPQtyVat = (parseFloat(this.spUnitVat) * parseFloat(this.quantity)).toFixed(2);
+        this.spQtyVat = _SPQtyVat;
+
+        let _SPUnitWoVat = (parseFloat(this.spUnitVat) / 1.12).toFixed(2);
+        this.spUnitWoVat = _SPUnitWoVat;
+
+        let _SPQtyWoVat = _SPUnitWoVat * parseFloat(this.quantity);
+        this.spQtyWoVat = _SPQtyWoVat;
+
+        let _costUnitVat = (( parseFloat(this.costRawUnitVat) * 12 ) * 1.12).toFixed(2);
+        this.costUnitVat = _costUnitVat;
+
+        let _costQuantityVat = (parseFloat(this.quantity) * _costUnitVat).toFixed(2);
+        this.costQuantityVat = _costQuantityVat;
+
+        let _costUnitWoVat = (parseFloat(_costUnitVat) / 1.12).toFixed(2);
+        this.costUnitWoVat = _costUnitWoVat;
+
+        
+        let _CostQuantityWoVat = parseFloat(_costUnitWoVat * parseFloat(this.quantity)).toFixed(2);
+
+        this.CostQuantityWoVat = _CostQuantityWoVat;
+
+        console.log("Cost Quantity w/o VAT:", _costUnitWoVat);
+        console.log("Cost Quantity w/o VAT:", this.quantity);
+        console.log("total: " , this.CostQuantityWoVat);
+
+        // let _profitMarginWoVat = _SPUnitWoVat - parseFloat(this.quantity) - (_costUnitWoVat * parseFloat(this.quantity));
+
+        // this.ProfitMarginWoVat = _profitMarginWoVat.toFixed(2);
+
+        // this.ProfitMargin = _profitMarginWoVat != 0 ? (_profitMarginWoVat / _SPQtyWoVat) * 100 : 0; 
+
+        console.log("Computation results:", {
+          quantity: this.quantity,
+          spUnitVat: this.spUnitVat,
+          SPQtyWoVat: this.SPQtyWoVat,
+          spQtyVat: this.spQtyVat,
+          spUnitWoVat: this.spUnitWoVat,
+          costUnitVat: this.costUnitVat,
+          costQuantityVat: this.costQuantityVat,
+          costUnitWoVat: this.costUnitWoVat,
+          profitMarginWoVat: this.profitMarginWoVat,
+          profitMargin: this.profitMargin
+        });
+
+
+
+    },
     async showDrawerDetail() {
       
       console.log('Selected Order ID:', this.selectedOrderId);
-      this.visibleRight = true;
+      this.visibleComputation = true;
+      // this.visibleRight = true;
 
     },      
     checkProductCode() {
@@ -441,7 +680,7 @@ export default {
         this.costUnitVat = '';
         this.costQuantityVat = 0.00;
         this.costUnitWoVat = 0.00;
-        this.costQuantityWoVat = 0.00;
+        this.costQuantityWoVat = 1;
         this.profitMarginWoVat = '';
         this.profitMargin = '';
         this.targetSellingPriceVat = '';
