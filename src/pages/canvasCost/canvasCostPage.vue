@@ -96,308 +96,201 @@
 </div>
     </div>
 
-<Dialog v-model:visible="visibleComputation" modal header="Computation" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-    
-<div class="flex gap-4">
-<div class="w-2/3">
-        <div>
-            <small>Product Code</small>
-            <InputGroup>
-                <InputText placeholder="Enter Item Number" 
-                v-model="productCode" 
-                type="text" 
-                class="w-full" 
-                size="small"/>
-                <InputGroupAddon>
-                    <Button icon="pi pi-search" @click="checkProductCode" size="small" severity="secondary" variant="text"/>
-                </InputGroupAddon>
-            </InputGroup>
-        </div>
-        <div>
-            <small>Category</small>
-            <InputText v-model="category" type="text" class="w-full" size="small" />
-          </div>
+    <Dialog v-model:visible="visibleComputation" modal header="Product Details" :style="{ width: '60vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        
+        <div class="flex gap-4">
+        <div class="w-2/3">
+                <div>
+                    <small>Product Code</small>
+                    <InputGroup>
+                        <InputText placeholder="Enter Item Number" 
+                        v-model="productCode" 
+                        type="text" 
+                        class="w-full" 
+                        size="small"/>
+                        <InputGroupAddon>
+                            <Button icon="pi pi-search" @click="checkProductCode" size="small" severity="secondary" variant="text"/>
+                        </InputGroupAddon>
+                    </InputGroup>
+                </div>
+                <div>
+                    <small>Category</small>
+                    <InputText v-model="category" type="text" class="w-full" size="small" />
+                  </div>
 
-          <div>
-            <small>Quantity</small>
-            <InputText v-model="quantity" type="text" class="w-full" size="small" />
-          </div>
+                  <div>
+                    <small>Quantity</small>
+                    <InputText v-model="quantity" @blur="computeRaw()" type="text" class="w-full" size="small" />
+                  </div>
 
-          <div>
-            <small>Selling Price Unit VAT</small>
-            <InputText v-model="spUnitVat" @blur="computeRaw()" type="text" class="w-full" size="small" />
-          </div>
+                  <div>
+                    <small>Selling Price Unit VAT</small>
+                    <InputText v-model="spUnitVat" @blur="computeRaw()" type="text" class="w-full" size="small" />
+                  </div>
 
-          <div>
-          <small>Cost Unit VAT</small>
-              <InputText 
-                v-model="costRawUnitVat" 
-                @input="computeRaw()" 
-                type="text" 
-                size="small" 
-                class="w-full"
-              />
-          </div>
-         <div class="flex gap-2 mt-2">
-            <Button 
-              label="Compute" 
-              class="flex-1" 
-              size="small" 
-              severity="info" 
-              @click="visible = false" 
-            />
-            <Button 
-              label="Sync SAP" 
-              class="flex-1" 
-              size="small" 
-              severity="info" 
-              @click="visible = false" 
-            />
-          </div>
-          <div class="flex gap-2 mt-2">
-            <Button 
-              label="Save" 
-              class="flex-1" 
-              size="small" 
-              severity="primary" 
-              @click="visible = false" 
-            />
-          </div>
+                  <div>
+                  <small>Cost Unit VAT</small>
+                      <InputText 
+                        v-model="costRawUnitVat" 
+                        @blur="computeRaw()" 
+                        type="text" 
+                        size="small" 
+                        class="w-full"
+                      />
+                  </div>
+                <div class="flex gap-2 mt-2">
+                    <Button 
+                      label="Compute" 
+                      class="flex-1" 
+                      size="small" 
+                      severity="info" 
+                      @click="visible = false" 
+                    />
+                    <Button 
+                      label="Sync SAP" 
+                      class="flex-1" 
+                      size="small" 
+                      severity="info" 
+                      @click="visible = false" 
+                    />
+                  </div>
+                  <div class="flex gap-2 mt-2">
+                    <Button 
+                      label="Save" 
+                      class="flex-1" 
+                      size="small" 
+                      severity="primary" 
+                      @click="visible = false" 
+                    />
+                  </div>
+                  
+
+            </div>
+            <div class="w-full">
+
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small  class="text-[#c52b42] font-bold">Description</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.description }}</small>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-2 mt-2">
+                    <div class="w-1/3">
+                      <small class="text-[#c52b42] font-bold">Selling Price</small>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small>Quantity VAT</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.spQtyVat }}</small>
+                    </div>
+                  </div>
+                  
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small>Unit w/o VAT</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.spUnitWoVat }}</small>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small>Quantity w/o VAT</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.spQtyWoVat }}</small>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small class="text-[#c52b42] font-bold">Cost</small>
+                    </div>
+                  </div>
           
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small>Unit VAT x 12 months</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.costUnitVat }}</small>
+                    </div>
+                  </div>
 
-    </div>
-    <div class="w-full">
+                <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small>Quantity VAT</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.costQuantityVat }}</small>
+                    </div>
+                  </div>
 
-          <div>
-            <small>Description</small> <br></br>
-            <small>{{ this.description }}</small>
-          </div>
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small>Unit w/o VAT</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.costUnitWoVat }}</small>
+                    </div>
+                  </div>
 
-         <div>
-            <small>Quantity VAT</small>
-            <!-- <InputText v-model="spQtyVat" disabled type="text" class="w-full" size="small" /> -->
-            {{ spQtyVat }}
-          </div>
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small>Quantity w/o VAT</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.costQuantityWoVat }}</small>
+                    </div>
+                  </div>
 
-          <div>
-            <small>Unit w/o VAT</small>
-            <InputText v-model="spUnitWoVat" disabled type="text" class="w-full" size="small" />
-          </div>
+                  <div class="flex gap-2 mt-2">
+                    <div class="w-1/3">
+                      <small class="text-[#c52b42] font-bold">Others</small>
+                    </div>
+                  </div>
 
-          <div>
-            <small>Quantity w/o VAT</small>
-            <InputText v-model="spQtyWoVat" disabled type="text" class="w-full" size="small" />
-          </div>
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small>Profit Margin w/o VAT</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.profitMarginWoVat }}</small>
+                    </div>
+                  </div>
 
-          <div>
-            <small>PO Reference Date</small>
-            <DatePicker v-model="poRefDate" class="w-full" size="small" />
-          </div>
 
-          <div>
-            <small>Recommended Supplier</small>
-            <InputText v-model="recommendedSupplier" type="text" class="w-full" size="small" />
-          </div>
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small>Profit Margin VAT</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.profitMargin }}</small>
+                    </div>
+                  </div>
 
-          <div class="mt-2">
-            <label for="" class="font-bold text-[#c52b42]">Cost</label>
-          </div>
+                  <div class="flex gap-2">
+                    <div class="w-1/3">
+                      <small>Target Selling Price VAT</small>
+                    </div>
+                    <div class="flex-1">
+                    <small>: {{ this.targetSellingPriceVat }}</small>
+                    </div>
+                  </div>
 
-         <div class="flex gap-2">
-            <div class="flex-1 min-w-0">
-              <small>Unit VAT</small>
-              <InputText 
-                v-model="costRawUnitVat" 
-                @input="computeRaw()" 
-                type="text" 
-                size="small" 
-                class="w-full"
-              />
             </div>
-
-            <div class="flex-1 min-w-0">
-              <small class="text-[#c52b42]"><i>x12 months</i></small>
-              <InputText 
-                v-model="costUnitVat" 
-                disabled 
-                type="text" 
-                size="small" 
-                class="w-full"
-              />
-            </div>
-          </div>
-
-          <div>
-            <small>Quantity VAT</small>
-            <InputText v-model="costQuantityVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Unit w/o VAT</small>
-            <InputText v-model="costUnitWoVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Quantity w/o VAT</small>
-            <InputText v-model="costQuantityWoVat" readonly type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Profit Margin w/o VAT</small>
-            <InputText v-model="profitMarginWoVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-           <div>
-            <small>Profit Margin VAT</small>
-            <InputText v-model="profitMargin" disabled type="text" class="w-full" size="small" />
-          </div>
-
-           <div>
-            <small>Target Selling Price VAT</small>
-            <InputText v-model="targetSellingPriceVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-    </div>
-</div>
-  
-  
-</Dialog>
-
-
-    <Drawer v-model:visible="visibleRight" header="Product Details" position="right">
-      <div>
-        <div class="card flex flex-col gap-1">
-
-          <div>
-            <small>Product Code</small>
-            <InputGroup>
-                <InputText placeholder="Enter Item Number" 
-                v-model="productCode" 
-                type="text" 
-                class="w-full" 
-                size="small"/>
-                <InputGroupAddon>
-                    <Button icon="pi pi-search" @click="checkProductCode" size="small" severity="secondary" variant="text"/>
-                </InputGroupAddon>
-            </InputGroup>
-          </div>
-
-          <div>
-            <small>Description</small>
-            <InputText  disabled ref="nextTextbox" v-model="description" class="w-full" type="text"  />
-          </div>
-
-          <div>
-            <small>Category</small>
-            <InputText v-model="category" type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Quantity</small>
-            <InputText v-model="quantity" type="text" class="w-full" size="small" />
-          </div>
-
-          <div class="mt-2">
-            <label for="" class="font-bold text-[#c52b42]">Selling Price</label>
-          </div>
-
-          <div>
-            <small>Unit VAT</small>
-            <InputText v-model="spUnitVat" @blur="computeRaw()" type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Quantity VAT</small>
-            <InputText v-model="spQtyVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Unit w/o VAT</small>
-            <InputText v-model="spUnitWoVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Quantity w/o VAT</small>
-            <InputText v-model="spQtyWoVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>PO Reference Date</small>
-            <DatePicker v-model="poRefDate" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Recommended Supplier</small>
-            <InputText v-model="recommendedSupplier" type="text" class="w-full" size="small" />
-          </div>
-
-          <div class="mt-2">
-            <label for="" class="font-bold text-[#c52b42]">Cost</label>
-          </div>
-
-         <div class="flex gap-2">
-            <div class="flex-1 min-w-0">
-              <small>Unit VAT</small>
-              <InputText 
-                v-model="costRawUnitVat" 
-                @input="computeRaw()" 
-                type="text" 
-                size="small" 
-                class="w-full"
-              />
-            </div>
-
-            <div class="flex-1 min-w-0">
-              <small class="text-[#c52b42]"><i>x12 months</i></small>
-              <InputText 
-                v-model="costUnitVat" 
-                disabled 
-                type="text" 
-                size="small" 
-                class="w-full"
-              />
-            </div>
-          </div>
-
-          <div>
-            <small>Quantity VAT</small>
-            <InputText v-model="costQuantityVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Unit w/o VAT</small>
-            <InputText v-model="costUnitWoVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Quantity w/o VAT</small>
-            <InputText v-model="costQuantityWoVat" readonly type="text" class="w-full" size="small" />
-          </div>
-
-          <div>
-            <small>Profit Margin w/o VAT</small>
-            <InputText v-model="profitMarginWoVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-           <div>
-            <small>Profit Margin VAT</small>
-            <InputText v-model="profitMargin" disabled type="text" class="w-full" size="small" />
-          </div>
-
-           <div>
-            <small>Target Selling Price VAT</small>
-            <InputText v-model="targetSellingPriceVat" disabled type="text" class="w-full" size="small" />
-          </div>
-
-         </div>
-      </div>
-      <template #footer>
-       <div class="flex gap-2">
-        <Button label="Sync SAP" class="w-1/2" severity="secondary" />
-        <Button label="Save" class="w-1/2" @click="saveCanvassDetail()" severity="primary" />
-    </div>
-    </template>
-    </Drawer>
+        </div>
+      
+      
+    </Dialog>
 
     <Dialog 
         v-model:visible="modalVisible" 
@@ -591,15 +484,11 @@ export default {
 
         this.CostQuantityWoVat = _CostQuantityWoVat;
 
-        console.log("Cost Quantity w/o VAT:", _costUnitWoVat);
-        console.log("Cost Quantity w/o VAT:", this.quantity);
-        console.log("total: " , this.CostQuantityWoVat);
+        let _profitMarginWoVat = _SPUnitWoVat - parseFloat(this.quantity) - (_costUnitWoVat * parseFloat(this.quantity));
 
-        // let _profitMarginWoVat = _SPUnitWoVat - parseFloat(this.quantity) - (_costUnitWoVat * parseFloat(this.quantity));
+        this.ProfitMarginWoVat = _profitMarginWoVat.toFixed(2);
 
-        // this.ProfitMarginWoVat = _profitMarginWoVat.toFixed(2);
-
-        // this.ProfitMargin = _profitMarginWoVat != 0 ? (_profitMarginWoVat / _SPQtyWoVat) * 100 : 0; 
+        this.ProfitMargin = _profitMarginWoVat != 0 ? (_profitMarginWoVat / _SPQtyWoVat) * 100 : 0; 
 
         console.log("Computation results:", {
           quantity: this.quantity,
