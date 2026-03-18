@@ -1,4 +1,9 @@
 .p-inputtext {
-    --p-inputtext-border-color: #60A7DB;
-    --p-inputtext-focus-border-color: #378ED1;
+    --p-inputtext-border-color: red;
+    --p-inputtext-focus-border-color: red;
+    --p-inputtext-focus-border-color: red;
+
+    	
+    --p-inputtext-border-color: red;
+
   }

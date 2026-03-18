@@ -1,12 +1,27 @@
 <template>
   <Toast/>
   <div class="min-h-screen bg-[#F8F9FA] font-sans">
-    <!-- Top buttons section -->
-    <div class="flex justify-end gap-2 p-2">
-      <Button severity="primary" size="small" @click="openModal('Create')">Create Sales Order</Button>
-      <Button severity="secondary" size="small">Update</Button>
-    </div>
+    
+    <div class="flex gap-2">
 
+  <div class="w-1/4">
+    <InputText type="text" v-model="value" size="small" class="w-full" placeholder="Search Sales Order" />
+  </div>
+
+      <div class="flex-1 flex items-center justify-between">
+        <h1 class="text-2xl text-gray-400">Canvass Cost</h1>
+
+        <div class="flex gap-2">
+          <Button severity="primary" size="small" @click="openModal('Create')">
+            Create Sales Order
+          </Button>
+          <Button severity="secondary" size="small">
+            Update
+          </Button>
+        </div>
+      </div>
+
+    </div>
     <!-- Main content: left and right panels -->
     <div class="flex mt-2 gap-2">
     <!-- Left side: card with vertical scrolling -->
@@ -16,7 +31,7 @@
         <h2 class="text-lg font-semibold mb-2">MY CANVAS</h2>
         <div class="overflow-y-auto custom-scrollbar flex-1">
           <template v-if="canvassCostData && canvassCostData.length">
-            <div v-for="(item, index) in canvassCostData" :key="index" class="mb-2 p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100" @click="selectedOrderMethod(item)">
+            <div v-for="(item, index) in canvassCostData" :key="index" class="mb-2 p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100" style="border: 5px solid #e5e7eb" @click="selectedOrderMethod(item)">
               <!-- <small>Sales Order No:</small> -->
               <p class="font-medium text-[#c52b42]">{{ item.salesOrderNo }}</p>
 
@@ -27,7 +42,7 @@
               <p class="text-xs text-gray-500">{{ item.customerName }}</p>
 
               <small>Date:</small>
-              <p class="text-xs text-gray-500">{{ item.salesOrderDate }}</p>
+              <p class="text-xs text-gray-500">{{ formatDate(item.salesOrderDate) }}</p>
 
 
             </div>
@@ -38,7 +53,7 @@
     </div>
 
     <!-- Right side: content for selected item -->
-    <div class="flex-1 min-w-0 bg-white rounded shadow p-4 flex flex-col h-[430px]">
+    <div class="flex-1 min-w-0 bg-white rounded shadow p-4 flex flex-col h-[430px]" >
   <div v-if="isActive" class="flex flex-col h-full">
     
     <div class="grid grid-cols-3 gap-4 mb-4">
@@ -55,6 +70,11 @@
     <div class="flex gap-2 mb-4">
       <Button severity="secondary" icon="pi pi-trash" size="small" />
       <Button severity="primary" @click="showDrawerDetail" icon="pi pi-plus" size="small" />
+
+      <div class="ml-auto">
+        <Button label="FDC Services" severity="danger" variant="text" />
+        <Button label="Charges" severity="danger" variant="text" />
+      </div>
     </div>
 
     <div class="flex-1 min-h-0">
@@ -120,18 +140,20 @@
 
                   <div>
                     <small>Quantity</small>
-                    <InputText v-model="quantity" type="text" class="w-full" size="small" />
+                    <InputNumber v-model="quantity" :minFractionDigits="2" @blur="computeRaw()" type="text" class="w-full" size="small" />
                   </div>
 
                   <div>
                     <small>Selling Price Unit VAT</small>
-                    <InputText v-model="spUnitVat" type="text" class="w-full" size="small" />
+                    <InputNumber v-model="spUnitVat" :minFractionDigits="2" @blur="computeRaw()" type="text" class="w-full" size="small" />
                   </div>
 
                   <div>
                   <small>Cost Unit VAT</small>
-                      <InputText 
+                      <InputNumber 
                         v-model="costRawUnitVat" 
+                        :minFractionDigits="2"
+                        @blur="computeRaw()"
                         type="text" 
                         size="small" 
                         class="w-full"
@@ -139,31 +161,27 @@
                   </div>
                 <div class="flex gap-2 mt-2">
                     <Button 
-                      label="Compute" 
-                      class="flex-1" 
+                      icon="pi pi-calculator"
+                      
                       size="small" 
                       severity="info" 
                       @click="computeRaw()" 
                     />
                     <Button 
-                      label="Sync SAP" 
-                      class="flex-1" 
+                      icon="pi pi-sync"
+                      
                       size="small" 
                       severity="info" 
-                      @click="visible = false" 
                     />
-                  </div>
-                  <div class="flex gap-2 mt-2">
                     <Button 
                       label="Save" 
-                      class="flex-1" 
+                      class="w-full"
                       size="small" 
                       severity="primary" 
                       @click="saveCanvassDetail()" 
                     />
                   </div>
                   
-
             </div>
             <div class="w-full">
 
@@ -329,7 +347,7 @@
 
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">SO Date</label>
-            <Calendar v-model="form.date" dateFormat="yy-mm-dd" placeholder="yyyy-mm-dd" class="w-full p-inputtext-md" />
+            <DatePicker v-model="form.date" class="w-full p-inputtext-md border-gray-300" />
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">PDEX Rate</label>
@@ -371,6 +389,7 @@
 import { mapState, mapActions } from 'pinia';
 import { useCanvasCost } from '@/stores/CanvasCost/CanvasCostStore';
 import { parse } from 'vue/compiler-sfc';
+import moment from "moment";
 
 
 export default {
@@ -391,7 +410,7 @@ export default {
         salesOrderDate: '',
         businesUnit: '',
         pdexRate: '',
-        corporate: '',
+        isCorporate: '',
         yearCategory: '',
         status: 'Draft',
         createdSalesAgentBy: ''
@@ -425,7 +444,8 @@ export default {
       costQuantityWoVat: 0.00,
       profitMarginWoVat: 0.00,
       profitMargin: 0.00,
-      targetSellingPriceVat: 0.00
+      targetSellingPriceVat: 0.00,
+      isValidProductCode: false,
 
 
     }
@@ -512,12 +532,18 @@ export default {
 
         this.description = this.productCodeListRaw.find(item => item.itemNumber === this.productCode).itemDescription;
 
+        this.isValidProductCode = true;
+
       } else {
         this.$toast.add({ severity: 'error', summary: 'Error', detail: 'The entered product code was not found in the database. If the product exists in SAP, please click "Sync SAP" to retrieve the latest records.', life: 1500 });
         this.productCode = "";
+        this.isValidProductCode = false;
       }
     },
     async saveCanvassDetail() {
+
+      if(this.isValidProductCode) {
+
         await this.postCanvasCostDetail({
           canvasCostHeaderId: this.selectedOrderId,
           productCode: this.productCode,
@@ -564,6 +590,13 @@ export default {
         this.targetSellingPriceVat = 0.00;
 
         this.visibleComputation = false;
+        this.isValidProductCode = false;
+
+        } else {
+          this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Please enter a valid product code before saving.', life: 1500 });
+          this.isValidProductCode = false;
+          this.productCode = '';
+        }
 
     },
     async selectedOrderMethod(item) {
@@ -621,7 +654,7 @@ export default {
             salesOrderNo: this.form.soNumber,
             customerRefNo: this.form.refNo,
             customerName: this.form.customerName,
-            salesOrderDate: this.form.date ? this.form.date.toISOString() : null,
+            salesOrderDate: moment(this.form.date).format("YYYY-MM-DD"),
             businesUnit: this.form.bu,
             pdexRate: this.form.pdex,
             corporate: this.form.isCorporate ? 'In-House' : 'Third-Party',
@@ -630,6 +663,8 @@ export default {
             createdSalesAgentBy: 'John Paul' 
           };
   
+          console.log(payload);
+
           await this.postCanvasCost(payload)
             .then(() => {
               

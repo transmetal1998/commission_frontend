@@ -87,6 +87,7 @@ export const useCanvasCost = defineStore('canvasCost', {
                     customerName : data.customerName,
                     customerName: data.customerName, 
                     businesUnit : data.businesUnit,
+                    salesOrderDate: data.salesOrderDate,
                     pdexRate: data.pdexRate,   
                     corporate : data.corporate,
                     yearCategory: data.yearCategory,
