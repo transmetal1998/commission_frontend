@@ -120,19 +120,18 @@
 
                   <div>
                     <small>Quantity</small>
-                    <InputText v-model="quantity" @blur="computeRaw()" type="text" class="w-full" size="small" />
+                    <InputText v-model="quantity" type="text" class="w-full" size="small" />
                   </div>
 
                   <div>
                     <small>Selling Price Unit VAT</small>
-                    <InputText v-model="spUnitVat" @blur="computeRaw()" type="text" class="w-full" size="small" />
+                    <InputText v-model="spUnitVat" type="text" class="w-full" size="small" />
                   </div>
 
                   <div>
                   <small>Cost Unit VAT</small>
                       <InputText 
                         v-model="costRawUnitVat" 
-                        @blur="computeRaw()" 
                         type="text" 
                         size="small" 
                         class="w-full"
@@ -144,7 +143,7 @@
                       class="flex-1" 
                       size="small" 
                       severity="info" 
-                      @click="visible = false" 
+                      @click="computeRaw()" 
                     />
                     <Button 
                       label="Sync SAP" 
@@ -160,7 +159,7 @@
                       class="flex-1" 
                       size="small" 
                       severity="primary" 
-                      @click="visible = false" 
+                      @click="saveCanvassDetail()" 
                     />
                   </div>
                   
@@ -206,7 +205,7 @@
                       <small>Quantity w/o VAT</small>
                     </div>
                     <div class="flex-1">
-                    <small>: {{ this.spQtyWoVat }}</small>
+                      <small>: {{ this.spQtyWoVat }}</small>
                     </div>
                   </div>
 
@@ -412,18 +411,18 @@ export default {
       productCode: '',
       description: '',
       category: '',
-      quantity: '',
-      spUnitVat: '',
+      quantity: 0.00,
+      spUnitVat: 0.00,
       spQtyVat: 0.00,
       spUnitWoVat: 0.00,
       spQtyWoVat: 0.00,
       poRefDate: '',
       recommendedSupplier: '',
-      costUnitVat: '',
-      costRawUnitVat: '',
+      costUnitVat: 0.00,
+      costRawUnitVat: 0.00,
       costQuantityVat: 0.00,
       costUnitWoVat: 0.00,
-      costQuantityWoVat: 1,
+      costQuantityWoVat: 0.00,
       profitMarginWoVat: 0.00,
       profitMargin: 0.00,
       targetSellingPriceVat: 0.00
@@ -461,48 +460,38 @@ export default {
         }),
     computeRaw() {
 
-        let _SPQtyVat = (parseFloat(this.spUnitVat) * parseFloat(this.quantity)).toFixed(2);
-        this.spQtyVat = _SPQtyVat;
 
-        let _SPUnitWoVat = (parseFloat(this.spUnitVat) / 1.12).toFixed(2);
-        this.spUnitWoVat = _SPUnitWoVat;
+        let _Quantity = parseFloat(this.quantity);
 
-        let _SPQtyWoVat = _SPUnitWoVat * parseFloat(this.quantity);
-        this.spQtyWoVat = _SPQtyWoVat;
+        let _SPQtyVat = parseFloat(this.spUnitVat) * parseFloat(_Quantity);
+        this.spQtyVat = _SPQtyVat.toFixed(2);
 
-        let _costUnitVat = (( parseFloat(this.costRawUnitVat) * 12 ) * 1.12).toFixed(2);
-        this.costUnitVat = _costUnitVat;
+        let _SPUnitWoVat = parseFloat(this.spUnitVat) / 1.12;
+        this.spUnitWoVat = _SPUnitWoVat.toFixed(2);
 
-        let _costQuantityVat = (parseFloat(this.quantity) * _costUnitVat).toFixed(2);
-        this.costQuantityVat = _costQuantityVat;
+        let _SPQtyWoVat = parseFloat(_SPUnitWoVat) * parseFloat(_Quantity);
+        this.spQtyWoVat = _SPQtyWoVat.toFixed(2);
 
-        let _costUnitWoVat = (parseFloat(_costUnitVat) / 1.12).toFixed(2);
-        this.costUnitWoVat = _costUnitWoVat;
+        let _costUnitVat = ( parseFloat(this.costRawUnitVat) * 12 ) * 1.12;
+        this.costUnitVat = _costUnitVat.toFixed(2);
 
+        let _costQuantityVat = parseFloat(_Quantity) * _costUnitVat;
+        this.costQuantityVat = _costQuantityVat.toFixed(2);
+
+        let _costUnitWoVat = parseFloat(_costUnitVat) / 1.12;
+        this.costUnitWoVat = _costUnitWoVat.toFixed(2);
         
-        let _CostQuantityWoVat = parseFloat(_costUnitWoVat * parseFloat(this.quantity)).toFixed(2);
+        let _CostQuantityWoVat = parseFloat(_costUnitWoVat) * parseFloat(_Quantity);
+        this.costQuantityWoVat = _CostQuantityWoVat.toFixed(2);
 
-        this.CostQuantityWoVat = _CostQuantityWoVat;
+        let _profitMarginWoVat = (_SPUnitWoVat * parseFloat(_Quantity)) - (_costUnitWoVat * parseFloat(_Quantity));
+        this.profitMarginWoVat = _profitMarginWoVat.toFixed(2);
 
-        let _profitMarginWoVat = _SPUnitWoVat - parseFloat(this.quantity) - (_costUnitWoVat * parseFloat(this.quantity));
+        let _profitMargin = _profitMarginWoVat != 0 ? (_profitMarginWoVat / _SPQtyWoVat) * 100 : 0;
+        this.profitMargin = _profitMargin.toFixed(2);
 
-        this.ProfitMarginWoVat = _profitMarginWoVat.toFixed(2);
-
-        this.ProfitMargin = _profitMarginWoVat != 0 ? (_profitMarginWoVat / _SPQtyWoVat) * 100 : 0; 
-
-        console.log("Computation results:", {
-          quantity: this.quantity,
-          spUnitVat: this.spUnitVat,
-          SPQtyWoVat: this.SPQtyWoVat,
-          spQtyVat: this.spQtyVat,
-          spUnitWoVat: this.spUnitWoVat,
-          costUnitVat: this.costUnitVat,
-          costQuantityVat: this.costQuantityVat,
-          costUnitWoVat: this.costUnitWoVat,
-          profitMarginWoVat: this.profitMarginWoVat,
-          profitMargin: this.profitMargin
-        });
-
+        let _targetSellingPriceVat = _costQuantityVat / ( 1 - 0)
+        this.targetSellingPriceVat = _targetSellingPriceVat.toFixed(2);
 
 
     },
@@ -541,7 +530,7 @@ export default {
           spQtyWoVat: this.spQtyWoVat,
           poRefDate: this.poRefDate ? this.poRefDate.toISOString() : null,
           recommendedSupplier: this.recommendedSupplier,
-          costUnitVat: this.costUnitVat,
+          costUnitVat: this.costRawUnitVat, //raw unit vat
           costQuantityVat: this.costQuantityVat,
           costUnitWoVat: this.costUnitWoVat,
           costQuantityWoVat: this.costQuantityWoVat,
@@ -559,22 +548,22 @@ export default {
         this.productCode = '';
         this.description = '';
         this.category = '';
-        this.quantity = '';
-        this.spUnitVat = '';
+        this.quantity = 0.00;
+        this.spUnitVat = 0.00;
         this.spQtyVat = 0.00;
         this.spUnitWoVat = 0.00;
         this.spQtyWoVat = 0.00;
         this.poRefDate = '';
         this.recommendedSupplier = '';
-        this.costUnitVat = '';
+        this.costUnitVat = 0.00;
         this.costQuantityVat = 0.00;
         this.costUnitWoVat = 0.00;
-        this.costQuantityWoVat = 1;
-        this.profitMarginWoVat = '';
-        this.profitMargin = '';
-        this.targetSellingPriceVat = '';
+        this.costQuantityWoVat = 0.00;
+        this.profitMarginWoVat = 0.00;
+        this.profitMargin = 0.00;
+        this.targetSellingPriceVat = 0.00;
 
-        this.visibleRight = false;
+        this.visibleComputation = false;
 
     },
     async selectedOrderMethod(item) {
