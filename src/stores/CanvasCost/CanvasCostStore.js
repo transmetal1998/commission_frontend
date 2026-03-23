@@ -124,6 +124,53 @@ export const useCanvasCost = defineStore('canvasCost', {
                 }
             }
         },
+        async updateCanvasCost(data, id) {
+            try {
+                /** For API login and set the auth token */
+                const response = await api.put(`/CanvasCostSummary/${id}`, {
+                    id: id,
+                    salesOrderNo : data.salesOrderNo,
+                    customerRefNo: data.customerRefNo,
+                    customerName : data.customerName,
+                    customerName: data.customerName, 
+                    businesUnit : data.businesUnit,
+                    salesOrderDate: data.salesOrderDate,
+                    pdexRate: data.pdexRate,   
+                    corporate : data.corporate,
+                    yearCategory: data.yearCategory,
+                    status: data.status,
+                    createdSalesAgentBy: data.createdSalesAgentBy
+                });
+
+                return response.data;
+
+            } catch (err) {
+
+                if (err.response) {
+                    const status = err.response.status; // 400, 401, 500, etc.
+                    const message = err.response.data?.message || 'An error occurred';
+
+                    console.error(`HTTP ${status}: ${message}`);
+                    this.error = message;
+
+                    // You can handle different statuses differently
+                    if (status === 400) {
+                        // Bad Request
+                        console.warn('Bad request: probably invalid input');
+                    } else if (status === 401) {
+                        // Unauthorized
+                        console.warn('Unauthorized: invalid credentials');
+                    }
+
+                    return { status, message };
+                } else {
+                    // Network error or no response
+                    this.error = 'Network error';
+                    console.error(this.error);
+                    return { status: null, message: this.error };
+                }
+            }
+        },
         async postCanvasCostDetail(data) {
             try {
                 /** For API login and set the auth token */

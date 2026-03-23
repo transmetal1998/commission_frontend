@@ -65,14 +65,70 @@
     <div class="bg-gray-200 h-[8px] mb-4 -mx-4"></div>
 
     <div class="flex gap-2 mb-4">
-      <Button severity="secondary" icon="pi pi-trash" size="small" @click="deleteRowDetail()" />
-      <Button severity="primary" @click="showDrawerDetail" icon="pi pi-plus" size="small" />
+      <Button severity="secondary" icon="pi pi-trash" @click="deleteRowDetail()" />
+      <Button severity="primary" @click="showDrawerDetail" icon="pi pi-plus"  />
 
-      <div class="ml-auto">
-        <Button label="FDC Services" severity="danger" variant="text" />
-        <Button label="Charges" severity="danger" variant="text" />
+      <div class="ml-auto gap-2 flex">
+        <Button label="FDC Services" size="small" severity="primary" />
+        <Button label="Charges" size="small" severity="primary" @click="visibleRight = true" />
       </div>
     </div>
+
+
+      <Dialog v-model:visible="visibleRight" maximizable modal header="Add-ons Charges" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <div class="flex gap-2">
+              <div class="w-1/4">
+                <p class="text-sm text-gray-500 mb-2">Add-ons Charges</p>
+                
+              </div>
+              <div class="flex">
+                <DataTable 
+                  showGridlines 
+                  v-model:filters="addonsChargesFilters"
+                  :value="addonsChargesList" 
+                  paginator 
+                  :rows="50" 
+                  :rowsPerPageOptions="[5, 10, 25, 50, 100]"
+                  size="small"
+                  dataKey="id"
+                  filterDisplay="row"
+                  :globalFilterFields="['charges']"
+                >
+                  <template #header>
+                      <div class="flex justify-end gap-2">
+                          <IconField>
+                              <InputIcon>
+                                  <i class="pi pi-search" />
+                              </InputIcon>
+                              <InputText size="small" v-model="addonsChargesFilters['global'].value" placeholder="Search" />
+                          </IconField>
+                      </div>
+                  </template>
+                  <template #empty>
+                      <div class="py-4 text-center text-gray-500 italic">
+                          No Add-ons Charges Found.
+                      </div>
+                  </template>
+                  <Column field="charges" header="Charges" sortable></Column>
+                  <Column field="quantity" header="Quantity" sortable></Column>
+                  <Column field="type" header="Type" sortable></Column>         
+                  <Column field="unit" header="Unit" sortable></Column>
+                  <Column field="qty" header="Qty" sortable></Column>
+                  <Column field="unit" header="Unit" sortable></Column>
+                  <Column field="qty" header="Qty" sortable></Column>
+                  <Column field="unit" header="Unit" sortable></Column>
+                  <Column field="qty" header="Qty" sortable></Column>
+                  <Column field="unit" header="Unit" sortable></Column>
+                  <Column field="qty" header="Qty" sortable></Column>
+                  <Column field="prftMrgnWoVat" header="PMwoVat" sortable></Column>
+                  <Column field="prftMrgn" header="PM" sortable></Column>
+                </DataTable>
+              </div>
+              
+            </div>
+        </Dialog>
+
+
 
     <div class="flex-1 min-h-0">
       <DataTable
@@ -170,7 +226,7 @@
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">Period</label>
-            <Dropdown v-model="form.yearCategory" :options="['One Year', 'Multi-Year']" class="w-full p-inputtext-md border-gray-300" />
+            <Select v-model="form.yearCategory" :options="['One Year', 'Multi-Year']" class="w-full" />
           </div>
         </div>
 
@@ -190,19 +246,11 @@
         </template>
     </Dialog>
 
-    <Dialog v-model:visible="visibleDeleteConfirmation" modal header="Edit Profile" :style="{ width: '25rem' }">
-        <span class="text-surface-500 dark:text-surface-400 block mb-8">Update your information.</span>
-        <div class="flex items-center gap-4 mb-4">
-            <label for="username" class="font-semibold w-24">Username</label>
-            <InputText id="username" class="flex-auto" autocomplete="off" />
-        </div>
-        <div class="flex items-center gap-4 mb-8">
-            <label for="email" class="font-semibold w-24">Email</label>
-            <InputText id="email" class="flex-auto" autocomplete="off" />
-        </div>
+    <Dialog v-model:visible="visibleDeleteConfirmation" modal header="Delete Confirmation" :style="{ width: '25rem' }">
+        <span class="text-surface-500 dark:text-surface-400 block mb-8">Are you sure you want to delete the selected records?</span>
+        
         <div class="flex justify-end gap-2">
-            <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-            <Button type="button" label="Save" @click="visible = false"></Button>
+            <Button type="button" label="Confirm" @click="confirmDelete"></Button>
         </div>
     </Dialog>
 
@@ -271,7 +319,14 @@ export default {
       },
       productCodeListRaw: [],
       searchSalesOrder: '',
-      visibleDeleteConfirmation: false
+      visibleDeleteConfirmation: false,
+      isForUpdate: false,
+
+      addonsChargesList: [],
+      addonsChargesFilters: {
+          global: { value: null, matchMode: 'contains' },
+          charges: { value: null, matchMode: 'contains' },
+      },
 
     }
   },
@@ -299,6 +354,7 @@ export default {
             fetchCanvasHeaderDetails: 'fetchCanvasHeaderDetails',
             fetchProductList: 'fetchProductList',
             postCanvasCost: 'postCanvasCost',
+            updateCanvasCost: 'updateCanvasCost',
             fetchCanvassDetails: 'fetchCanvassDetails',
             deleteCanvasCostDetail: 'deleteCanvasCostDetail'
         }),
@@ -313,42 +369,40 @@ export default {
       });
       this.visibleComputation = false;
     },
-    async deleteRowDetail() {
-       
-      this.visibleDeleteConfirmation = false;
+    async confirmDelete() {
+    
+      const idsToDelete = this.selectedDetails.map(item => item.id);
 
-       if (!this.selectedDetails.length) {
-          this.$toast.add({
-            severity: 'warn',
-            summary: 'Warning',
-            detail: 'Please select at least one row.',
-            life: 1500
-          });
-          return;
-        }
-
-        // extract IDs
-        const ids = this.selectedDetails.map(item => item.id);
-
-        try {
-          await this.deleteCanvasCostDetail(ids);
-
+      this.deleteCanvasCostDetail(idsToDelete)
+        .then(() => {
           this.$toast.add({
             severity: 'success',
             summary: 'Deleted',
             detail: 'Selected records deleted successfully.',
             life: 1500
           });
-
-          // refresh table
           this.loadTableData();
-
-          // clear selection
           this.selectedDetails = [];
-
-        } catch (err) {
-          console.error(err);
-        }
+        })
+        .catch(err => {
+          console.error('Error deleting records:', err);
+          alert('Failed to delete records. Please try again.');
+        })
+        .finally(() => {
+          this.visibleDeleteConfirmation = false;
+        });
+    },
+    async deleteRowDetail() {
+       if (!this.selectedDetails || !this.selectedDetails.length) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Warning',
+          detail: 'Please select at least one row to delete.',
+          life: 1500
+        });
+        return;
+      }
+      this.visibleDeleteConfirmation = true;
     },
    
     async selectedOrderMethod(item) {
@@ -364,10 +418,13 @@ export default {
 
     },
     openModal(type) {
-      this.modalTitle = `${type} Sales Order`;
+    
       if (type === 'Create') {
+        this.modalTitle = `Create Sales Order`;
+
         this.resetForm();
       } else {
+        this.modalTitle = `Update Sales Order`;
 
         if(!this.selectedOrderId) {
           this.$toast.add({
@@ -392,6 +449,9 @@ export default {
           status: this.canvassCostHeaderDetails.status,
           createdSalesAgentBy: this.canvassCostHeaderDetails.createdSalesAgentBy
         } 
+
+        this.isForUpdate = true;
+
       }
       this.modalVisible = true;
     },
@@ -417,6 +477,7 @@ export default {
     async saveOrder() {
 
         const payload = {
+            id: this.isForUpdate ? this.selectedOrderId : undefined,
             salesOrderNo: this.form.salesOrderNo,
             customerRefNo: this.form.customerRefNo,
             customerName: this.form.customerName,
@@ -429,7 +490,19 @@ export default {
             createdSalesAgentBy: 'John Paul' 
           };
   
-          console.log(payload);
+          if(this.isForUpdate) {
+
+            await this.updateCanvasCost(payload, this.selectedOrderId)
+            .then(() => {
+              this.modalVisible = false;
+              this.resetForm();
+              this.$toast.add({ severity: 'info', summary: 'Updated', detail: 'You have updated the sales order', life: 3000 });
+            })
+
+            await this.fetchCanvasHeaderDetails(this.selectedOrderId);
+            this.canvassCostHeaderDetails = this.canvasCostHeaderDetails;
+
+          } else {
 
           await this.postCanvasCost(payload)
             .then(() => {
@@ -442,6 +515,9 @@ export default {
               console.error('Error saving order:', err);
               alert('Failed to save order. Please try again.');
             });
+
+
+          }
 
             await this.fetchCanvas(); 
             this.canvassCostData = this.canvasCostList; 
