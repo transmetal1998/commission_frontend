@@ -47,7 +47,7 @@ const generateRoutes = (moduleStore) => {
         },
         {
           path: '/canvasCost',
-          component: () => import('../pages/canvasCost/canvasCostPage.vue'),
+          component: () => import('../pages/canvassCost/canvassCostPage.vue'),
           // meta: { requiresAuth: true },
         },
         {
