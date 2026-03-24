@@ -1,17 +1,17 @@
 <template>
   <Toast/>
-  <div class="min-h-screen bg-[#F8F9FA] font-sans">
+  <div class=" bg-[#F8F9FA] font-sans">
     
     <div class="flex gap-2">
 
   <div class="w-1/4">
-    <InputText type="text" v-model="searchSalesOrder" size="small" class="w-full" placeholder="Search Sales Order" />
+    <h1 class="text-2xl text-gray-400">Canvass Cost</h1>
   </div>
 
-      <div class="flex-1 flex items-center justify-between">
-        <h1 class="text-2xl text-gray-400">Canvass Cost</h1>
+      <div class="flex-1 flex">
+        
 
-        <div class="flex gap-2">
+        <div class="flex justify-end gap-2">
           <Button severity="primary" label="Create Sales Order" size="small" @click="openModal('Create')"/>
           <Button severity="secondary" label="Update" size="small" @click="openModal('Update')"/>
         </div>
@@ -22,27 +22,83 @@
     <div class="flex mt-2 gap-2">
     <!-- Left side: card with vertical scrolling -->
     <div class="w-1/4">
-      <!-- fixed-height card: adjust h-[600px] as needed -->
-      <div class="bg-white rounded shadow p-4 h-[800px] flex flex-col">
-        <h2 class="text-lg font-semibold mb-2">MY CANVAS</h2>
-        <div class="overflow-y-auto custom-scrollbar flex-1">
-          <template v-if="canvassCostData && canvassCostData.length">
-            <div v-for="(item, index) in canvassCostData" :key="index" class="mb-2 p-2 rounded cursor-pointer hover:bg-[#F9F8F3]" style="border: 2px solid #E8E6DE" @click="selectedOrderMethod(item)">
-              
-              <p class="font-medium text-[#c52b42]">{{ item.salesOrderNo }}</p>
-              <small>Customer Ref No:</small>
-              <p class="text-xs text-gray-500">{{ item.customerRefNo }}</p>
-              <small>Customer Name:</small>
-              <p class="text-xs text-gray-500">{{ item.customerName }}</p>
-              <small>Date:</small>
-              <p class="text-xs text-gray-500">{{ formatDate(item.salesOrderDate) }}</p>
 
 
-            </div>
-          </template>
-          <div v-else class="text-gray-500">No data available</div>
-        </div>
-      </div>
+        <ScrollPanel
+            style="width: 100%; height: 430px"
+            :dt="{
+                bar: {
+                    background: '#cccccc'
+                }
+            }"
+        >
+              <DataTable
+
+            :value="canvassCostData"
+            paginator
+            :rows="5"
+            dataKey="id"
+            :showGridlines="false"
+            size="small"
+            v-model:filters="salesOrderFilters"
+            :globalFilterFields="['salesOrderNo', 'customerRefNo', 'customerName']"
+            class="overflow-auto"
+          >
+            <!-- HEADER (Search) -->
+            <template #header>
+              <div class="flex justify-end">
+                <IconField>
+                  <InputIcon>
+                    <i class="pi pi-search" />
+                  </InputIcon>
+                  <InputText 
+                    v-model="salesOrderFilters['global'].value" 
+                    placeholder="Search Sales Order" 
+                    size="small"
+                    class="w-full"
+                  />
+                </IconField>
+              </div>
+            </template>
+
+            <!-- EMPTY -->
+            <template #empty>
+              <div class="text-center py-4 text-gray-500">
+                No data available
+              </div>
+            </template>
+
+            <!-- CUSTOM CARD TEMPLATE -->
+            <Column>
+              <template #body="{ data }">
+                <div 
+                  class="mb-2 p-2 rounded cursor-pointer hover:bg-[#F9F8F3]"
+                  style="border: 2px solid #E8E6DE"
+                  @click="selectedOrderMethod(data)"
+                >
+                  <p class="font-medium text-[#c52b42]">{{ data.salesOrderNo }}</p>
+
+                  <small>Customer Ref No:</small>
+                  <p class="text-xs text-gray-500">{{ data.customerRefNo }}</p>
+
+                  <small>Customer Name:</small>
+                  <p class="text-xs text-gray-500">{{ data.customerName }}</p>
+
+                  <small>Date:</small>
+                  <p class="text-xs text-gray-500">
+                    {{ formatDate(data.salesOrderDate) }}
+                  </p>
+                </div>
+              </template>
+            </Column>
+          </DataTable>
+        </ScrollPanel>
+
+
+        
+
+
+
     </div>
 
     <!-- Right side: content for selected item -->
@@ -64,8 +120,8 @@
 
       <ButtonGroup>
           <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Remove" icon="pi pi-trash" />
-          <Button size="small" severity="primary" @click="showDrawerDetail" label="Add Row" icon="pi pi-plus" />
-          <Button size="small" severity="primary" @click="visibleRight = true" label="Add-ons" icon="pi pi-plus  " />
+          <Button size="small" severity="primary" @click="showDrawerDetail" label="Add Product" icon="pi pi-plus" />
+          <Button size="small" severity="primary" @click="showAddons()" label="Add-ons" icon="pi pi-plus  " />
       </ButtonGroup>
 
       <!-- <Button severity="secondary" icon="pi pi-trash" @click="deleteRowDetail()" />
@@ -78,9 +134,9 @@
     </div>
 
 
-      <Dialog v-model:visible="visibleRight" maximizable modal header="Add-ons" :style="{ width: '70rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+      <Dialog v-model:visible="visibleRight" maximizable modal header="Add-ons" :style="{ width: '78rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="flex gap-2">
-              <div class="w-1/6">
+              <div class="w-1/6 p-2">
                 <p class="text-sm text-gray-500 mb-2">All fields are required</p>
                 
                 <div class="flex flex-col">
@@ -103,39 +159,39 @@
 
                 <div>
                     <small class="text-gray-500">Quantity</small>
-                    <InputText id="username" size="small" class="w-full" v-model="addonsForm.quantity" variant="filled" />
+                    <InputNumber id="username" size="small" :minFractionDigits="2" class="w-full" v-model="addonsForm.quantity" variant="filled" />
                 </div>
 
                 <div>
                     <small class="text-gray-500">Selling Price Unit (VAT)</small>
-                    <InputText id="username" size="small" class="w-full" v-model="addonsForm.spUnitVat" variant="filled" />
+                    <InputNumber id="username" size="small" :minFractionDigits="2" class="w-full" v-model="addonsForm.spUnitVat" variant="filled" />
                 </div>
 
                 <div>
                     <small class="text-gray-500">Cost Unit (VAT)</small>
-                    <InputText id="username" size="small" class="w-full" v-model="addonsForm.costUnitVat" variant="filled" />
+                    <InputNumber id="username" size="small" :minFractionDigits="2" class="w-full" v-model="addonsForm.costUnitVat" variant="filled" />
                 </div>
 
-                <div class="mt-2">
+                <div class="mt-3">
                   <Button severity="primary" @click="saveToAddons()" label="Add" class="w-full"  size="small" />
                 </div>
 
                 </div>
 
               </div>
-              <div class="flex-1 min-w-0">
+              <div class="flex-1 min-w-2">
                 <div class="overflow-x-auto">
                 <DataTable 
-                  class="min-w-[1200px]"
                   showGridlines 
                   v-model:filters="addonsChargesFilters"
                   :value="addonsChargesList" 
                   paginator 
-                  :rows="50" 
+                  :rows="5" 
+                  :rowsPerPageOptions="[5, 10, 25, 50, 100]" 
                   size="small"
                   dataKey="id"
                   filterDisplay="row"
-                  :globalFilterFields="['charges']"
+                  :globalFilterFields="['category', 'type']"
                   responsiveLayout="scroll"
                 >
                   <template #header>
@@ -153,19 +209,19 @@
                           No Add-ons Found.
                       </div>
                   </template>
-                  <Column field="Category" header="Category" sortable></Column> 
-                  <Column field="type" header="Type" sortable></Column>
-                  <Column field="quantity" header="Quantity" sortable></Column>
-                  <Column field="unit" header="Unit" sortable></Column>
-                  <Column field="qty" header="Qty" sortable></Column>
-                  <Column field="unit" header="Unit" sortable></Column>
-                  <Column field="qty" header="Qty" sortable></Column>
-                  <Column field="unit" header="Unit" sortable></Column>
-                  <Column field="qty" header="Qty" sortable></Column>
-                  <Column field="unit" header="Unit" sortable></Column>
-                  <Column field="qty" header="Qty" sortable></Column>
-                  <Column field="prftMrgnWoVat" header="PMwoVat" sortable></Column>
-                  <Column field="prftMrgn" header="PM" sortable></Column>
+                  <Column field="category" header="Category" style="min-width: 120px" sortable></Column> 
+                  <Column field="type" header="Type" style="min-width: 120px" sortable></Column>
+                  <Column field="quantity" header="Quantity" style="min-width: 120px" sortable></Column>
+                  <Column field="spUnitVat" header="SP Unit (VAT)" style="min-width: 120px" sortable></Column>
+                  <Column field="spQtyVat" header="SP Qty (VAT)" style="min-width: 120px" sortable></Column>
+                  <Column field="spUnitWoVat" header="SP Unit (w/o VAT)" style="min-width: 120px" sortable></Column>
+                  <Column field="spQtyWoVat" header="SP Qty (w/o VAT)" style="min-width: 120px" sortable></Column>
+                  <Column field="costUnitVat" header="Cost Unit (VAT)" style="min-width: 120px"  sortable></Column>
+                  <Column field="costQuantityVat" header="Cost Qty (VAT)" style="min-width: 120px"  sortable></Column>
+                  <Column field="costUnitWoVat" header="Cost Unit (w/o VAT)" style="min-width: 120px"  sortable></Column>
+                  <Column field="costQuantityWoVat" header="Cost Qty (w/o VAT)" style="min-width: 120px"  sortable></Column>
+                  <Column field="profitMarginWoVat" header="Profit Margin (w/o VAT)" style="min-width: 120px"  sortable></Column>
+                  <Column field="profitMargin" header="Profit Margin" style="min-width: 120px"  sortable></Column>
                 </DataTable>
                 </div>
               </div>
@@ -185,22 +241,22 @@
         class="p-datatable-sm"
       >
         <Column selectionMode="multiple"></Column>
-        <Column field="productCode" header="Product Code" style="min-width: 120px"></Column>
-        <Column field="description" header="Description" style="min-width: 190px"></Column>
-        <Column field="category" header="Category" style="min-width: 120px"></Column>
-        <Column field="spUnitVat" header="Unit Vat" style="min-width: 120px"></Column>
-        <Column field="spQtyVat" header="Qty VAT" style="min-width: 120px"></Column>
-        <Column field="spUnitWoVat" header="Unit w/o VAT" style="min-width: 120px"></Column>
-        <Column field="spQtyWoVat" header="Qty w/o VAT" style="min-width: 120px"></Column>
-        <Column field="poRefDate" header="PO Ref Date" style="min-width: 120px"></Column>
-        <Column field="recommendedSupplier" header="Supplier" style="min-width: 120px"></Column>
-        <Column field="costUnitVat" header="Unit VAT" style="min-width: 120px"></Column>
-        <Column field="costQuantityVat" header="Qty VAT" style="min-width: 120px"></Column>
-        <Column field="costUnitWoVat" header="Unit w/o VAT" style="min-width: 120px"></Column>
-        <Column field="costQuantityWoVat" header="Qty w/o VAT" style="min-width: 120px"></Column>
-        <Column field="profitMarginWoVat" header="Profit Margin w/o VAT" style="min-width: 120px"></Column>
-        <Column field="profitMargin" header="Profit Margin" style="min-width: 120px"></Column>
-        <Column field="targetSellingPriceVat" header="Target Price VAT" style="min-width: 120px"></Column>
+        <Column field="productCode" header="Product Code" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="description" header="Description" style="min-width: 260px; font-size: 12px"></Column>
+        <Column field="category" header="Category" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="spUnitVat" header="Unit Vat" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="spQtyVat" header="Qty VAT" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="spUnitWoVat" header="Unit w/o VAT" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="spQtyWoVat" header="Qty w/o VAT" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="poRefDate" header="PO Ref Date" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="recommendedSupplier" header="Supplier" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="costUnitVat" header="Unit VAT" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="costQuantityVat" header="Qty VAT" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="costUnitWoVat" header="Unit w/o VAT" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="costQuantityWoVat" header="Qty w/o VAT" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="profitMarginWoVat" header="Profit Margin w/o VAT" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="profitMargin" header="Profit Margin" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="targetSellingPriceVat" header="Target Price VAT" style="min-width: 120px; font-size: 12px"></Column>
         </DataTable>
     </div>
   </div>
@@ -385,8 +441,13 @@ export default {
       addonsChargesList: [],
       addonsChargesFilters: {
           global: { value: null, matchMode: 'contains' },
-          charges: { value: null, matchMode: 'contains' },
+          category: { value: null, matchMode: 'contains' },
+          type: { value: null, matchMode: 'contains' }
       },
+
+      salesOrderFilters: {
+        global: { value: null, matchMode: 'contains' },
+      }
 
     }
   },
@@ -397,7 +458,8 @@ export default {
             canvassCostDetails: 'canvassCostDetails',
             productCodeList: 'productCodeList',
             addonsListByCategory: 'addonsListByCategory',
-            addonsListByType: 'addonsListByType'
+            addonsListByType: 'addonsListByType',
+            canvasCostAddonsCharges: 'canvasCostAddonsCharges'
         }),
   },
   async mounted() {
@@ -423,8 +485,26 @@ export default {
             deleteCanvasCostDetail: 'deleteCanvasCostDetail',
             fetchAddonsListByCategory: 'fetchAddonsListByCategory',
             fetchAddonsListByType: 'fetchAddonsListByType',
-            postCanvasCostAddons: 'postCanvasCostAddons'
+            postCanvasCostAddons: 'postCanvasCostAddons',
+            fetchCanvasCostAddonsChargesByHeader: 'fetchCanvasCostAddonsChargesByHeader'   
         }),
+      async showAddons() {
+        if(!this.selectedOrderId) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Warning',
+            detail: 'Please select a sales order to view add-ons.',
+            life: 1500
+          });
+          return;
+        }
+
+        await this.fetchCanvasCostAddonsChargesByHeader(this.selectedOrderId).then(() => {
+          this.addonsChargesList = this.canvasCostAddonsCharges;
+        });
+
+        this.visibleRight = true;
+      }, 
       async saveToAddons() {
 
           if(!this.addonsForm.selectedCategory || !this.addonsForm.selectedType || !this.addonsForm.quantity || !this.addonsForm.spUnitVat || !this.addonsForm.costUnitVat) {
@@ -461,13 +541,24 @@ export default {
               alert('Failed to add add-on charge. Please try again.');
             }); 
 
+            await this.fetchCanvasCostAddonsChargesByHeader(this.selectedOrderId).then(() => {
+              this.addonsChargesList = this.canvasCostAddonsCharges;
+            });
+
+            // this.visibleRight = false;
+
+            this.addonsForm = {
+              selectedCategory: '',
+              selectedType: '',
+              quantity: 0.00,
+              spUnitVat: 0.00,
+              costUnitVat: 0.00
+            };
+
       },
       async onCategoryChange() {
       
           this.selectedType = null; // reset type
-
-          console.log(this.addonsForm.selectedCategory);
-
           if (!this.addonsForm.selectedCategory) {
             this.types = [];
             return;

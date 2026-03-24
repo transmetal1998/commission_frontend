@@ -9,6 +9,7 @@ export const useCanvasCost = defineStore('canvasCost', {
         productCodeList: [],
         addonsListByCategory: [],
         addonsListByType: [],
+        canvasCostAddonsCharges: [],
           
     }),
     getters: {
@@ -29,6 +30,9 @@ export const useCanvasCost = defineStore('canvasCost', {
         },
         getAddonsListByType(state) {
             return state.addonsListByType;
+        },
+        getCanvasCostAddonsCharges(state) {
+            return state.canvasCostAddonsCharges;
         }
     },
     actions: {
@@ -42,6 +46,20 @@ export const useCanvasCost = defineStore('canvasCost', {
             } catch (err) {
                 
                 console.log('Error fetching product list:', err);
+                return false;
+            
+            }
+        },
+        async fetchCanvasCostAddonsChargesByHeader(id) {
+            try {
+                
+                const response = await api.get(`/CanvasCostAddonsCharges/header/${id}`);
+                this.canvasCostAddonsCharges = response.data;
+                return true;
+
+            } catch (err) {
+                
+                console.log('Error fetching canvas cost addons charges:', err);
                 return false;
             
             }
@@ -62,7 +80,6 @@ export const useCanvasCost = defineStore('canvasCost', {
         },
         async fetchAddonsListByType(selectedCategory) {
             try {
-                console.log('Selected category for fetching types:', selectedCategory);
                 const response = await api.get(`/AddonsList/types?category=${selectedCategory}`);
                 this.addonsListByType = response.data;
                 return true;
