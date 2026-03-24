@@ -12,12 +12,8 @@
         <h1 class="text-2xl text-gray-400">Canvass Cost</h1>
 
         <div class="flex gap-2">
-          <Button severity="primary" size="small" @click="openModal('Create')">
-            Create Sales Order
-          </Button>
-          <Button severity="secondary" size="small" @click="openModal('Update')">
-            Update
-          </Button>
+          <Button severity="primary" label="Create Sales Order" size="small" @click="openModal('Create')"/>
+          <Button severity="secondary" label="Update" size="small" @click="openModal('Update')"/>
         </div>
       </div>
 
@@ -31,7 +27,7 @@
         <h2 class="text-lg font-semibold mb-2">MY CANVAS</h2>
         <div class="overflow-y-auto custom-scrollbar flex-1">
           <template v-if="canvassCostData && canvassCostData.length">
-            <div v-for="(item, index) in canvassCostData" :key="index" class="mb-2 p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100" style="border: 5px solid #e5e7eb" @click="selectedOrderMethod(item)">
+            <div v-for="(item, index) in canvassCostData" :key="index" class="mb-2 p-2 rounded cursor-pointer hover:bg-[#F9F8F3]" style="border: 2px solid #E8E6DE" @click="selectedOrderMethod(item)">
               
               <p class="font-medium text-[#c52b42]">{{ item.salesOrderNo }}</p>
               <small>Customer Ref No:</small>
@@ -65,37 +61,85 @@
     <div class="bg-gray-200 h-[8px] mb-4 -mx-4"></div>
 
     <div class="flex gap-2 mb-4">
-      <Button severity="secondary" icon="pi pi-trash" @click="deleteRowDetail()" />
+
+      <ButtonGroup>
+          <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Remove" icon="pi pi-trash" />
+          <Button size="small" severity="primary" @click="showDrawerDetail" label="Add Row" icon="pi pi-plus" />
+          <Button size="small" severity="primary" @click="visibleRight = true" label="Add-ons" icon="pi pi-plus  " />
+      </ButtonGroup>
+
+      <!-- <Button severity="secondary" icon="pi pi-trash" @click="deleteRowDetail()" />
       <Button severity="primary" @click="showDrawerDetail" icon="pi pi-plus"  />
 
       <div class="ml-auto gap-2 flex">
         <Button label="FDC Services" size="small" severity="primary" />
         <Button label="Charges" size="small" severity="primary" @click="visibleRight = true" />
-      </div>
+      </div> -->
     </div>
 
 
-      <Dialog v-model:visible="visibleRight" maximizable modal header="Add-ons Charges" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+      <Dialog v-model:visible="visibleRight" maximizable modal header="Add-ons" :style="{ width: '70rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="flex gap-2">
-              <div class="w-1/4">
-                <p class="text-sm text-gray-500 mb-2">Add-ons Charges</p>
+              <div class="w-1/6">
+                <p class="text-sm text-gray-500 mb-2">All fields are required</p>
                 
+                <div class="flex flex-col">
+
+                <div>
+                    <small class="text-gray-500">Category</small>
+                    <Select v-model="addonsForm.selectedCategory" size="small" :options="addonsListByCategoryData" @change="onCategoryChange" placeholder="Select a Category" class="w-full" />
+                </div>
+
+                <div>
+                    <small class="text-gray-500">Type</small>
+                     <Select 
+                        v-model="addonsForm.selectedType"
+                        size="small"
+                        :options="types"
+                        placeholder="Select a Type"
+                        class="w-full"
+                      />
+                </div>
+
+                <div>
+                    <small class="text-gray-500">Quantity</small>
+                    <InputText id="username" size="small" class="w-full" v-model="addonsForm.quantity" variant="filled" />
+                </div>
+
+                <div>
+                    <small class="text-gray-500">Selling Price Unit (VAT)</small>
+                    <InputText id="username" size="small" class="w-full" v-model="addonsForm.spUnitVat" variant="filled" />
+                </div>
+
+                <div>
+                    <small class="text-gray-500">Cost Unit (VAT)</small>
+                    <InputText id="username" size="small" class="w-full" v-model="addonsForm.costUnitVat" variant="filled" />
+                </div>
+
+                <div class="mt-2">
+                  <Button severity="primary" @click="saveToAddons()" label="Add" class="w-full"  size="small" />
+                </div>
+
+                </div>
+
               </div>
-              <div class="flex">
+              <div class="flex-1 min-w-0">
+                <div class="overflow-x-auto">
                 <DataTable 
+                  class="min-w-[1200px]"
                   showGridlines 
                   v-model:filters="addonsChargesFilters"
                   :value="addonsChargesList" 
                   paginator 
                   :rows="50" 
-                  :rowsPerPageOptions="[5, 10, 25, 50, 100]"
                   size="small"
                   dataKey="id"
                   filterDisplay="row"
                   :globalFilterFields="['charges']"
+                  responsiveLayout="scroll"
                 >
                   <template #header>
-                      <div class="flex justify-end gap-2">
+                      <div class="flex justify-start gap-2">
                           <IconField>
                               <InputIcon>
                                   <i class="pi pi-search" />
@@ -106,12 +150,12 @@
                   </template>
                   <template #empty>
                       <div class="py-4 text-center text-gray-500 italic">
-                          No Add-ons Charges Found.
+                          No Add-ons Found.
                       </div>
                   </template>
-                  <Column field="charges" header="Charges" sortable></Column>
+                  <Column field="Category" header="Category" sortable></Column> 
+                  <Column field="type" header="Type" sortable></Column>
                   <Column field="quantity" header="Quantity" sortable></Column>
-                  <Column field="type" header="Type" sortable></Column>         
                   <Column field="unit" header="Unit" sortable></Column>
                   <Column field="qty" header="Qty" sortable></Column>
                   <Column field="unit" header="Unit" sortable></Column>
@@ -123,10 +167,11 @@
                   <Column field="prftMrgnWoVat" header="PMwoVat" sortable></Column>
                   <Column field="prftMrgn" header="PM" sortable></Column>
                 </DataTable>
+                </div>
               </div>
               
             </div>
-        </Dialog>
+      </Dialog>
 
 
 
@@ -297,6 +342,11 @@ export default {
       // Product Code
       productList: [],
 
+      addonsListByCategoryData: [],
+      selectedCategory: '',
+      selectedType: null,
+      types: [],
+
       formData: {
         productCode: '',
         description: '',
@@ -317,6 +367,16 @@ export default {
         profitMargin: 0.00,
         targetSellingPriceVat: 0.00
       },
+
+      addonsForm: {
+        selectedCategory: '',
+        selectedType: '',
+        quantity: 0.00,
+        spUnitVat: 0.00,
+        costUnitVat: 0.00
+      },
+
+
       productCodeListRaw: [],
       searchSalesOrder: '',
       visibleDeleteConfirmation: false,
@@ -335,7 +395,9 @@ export default {
             canvasCostList: 'canvasCostList',
             canvasCostHeaderDetails: 'canvasCostHeaderDetails',
             canvassCostDetails: 'canvassCostDetails',
-            productCodeList: 'productCodeList'
+            productCodeList: 'productCodeList',
+            addonsListByCategory: 'addonsListByCategory',
+            addonsListByType: 'addonsListByType'
         }),
   },
   async mounted() {
@@ -345,7 +407,9 @@ export default {
 
     await this.fetchProductList();
     this.productCodeListRaw = this.productCodeList.data;
-  
+
+    await this.fetchAddonsListByCategory();
+    this.addonsListByCategoryData = this.addonsListByCategory;   
       
   },
   methods: {
@@ -356,9 +420,65 @@ export default {
             postCanvasCost: 'postCanvasCost',
             updateCanvasCost: 'updateCanvasCost',
             fetchCanvassDetails: 'fetchCanvassDetails',
-            deleteCanvasCostDetail: 'deleteCanvasCostDetail'
+            deleteCanvasCostDetail: 'deleteCanvasCostDetail',
+            fetchAddonsListByCategory: 'fetchAddonsListByCategory',
+            fetchAddonsListByType: 'fetchAddonsListByType',
+            postCanvasCostAddons: 'postCanvasCostAddons'
         }),
-    
+      async saveToAddons() {
+
+          if(!this.addonsForm.selectedCategory || !this.addonsForm.selectedType || !this.addonsForm.quantity || !this.addonsForm.spUnitVat || !this.addonsForm.costUnitVat) {
+            this.$toast.add({
+              severity: 'warn',
+              summary: 'Warning',
+              detail: 'Please fill in all required fields.',
+              life: 1500
+            });
+            return;
+          }
+
+          const payload = {
+            canvasCostHeaderId: this.selectedOrderId,
+            category: this.addonsForm.selectedCategory,
+            type: this.addonsForm.selectedType,
+            quantity: this.addonsForm.quantity,
+            spUnitVat: this.addonsForm.spUnitVat,
+            costUnitVat: this.addonsForm.costUnitVat
+          };
+
+          await this.postCanvasCostAddons(payload)
+            .then(() => {
+              this.$toast.add({
+                severity: 'success',
+                summary: 'Added',
+                detail: 'Add-on charge added successfully.',
+                life: 1500
+              });
+              // Optionally, refresh the add-ons list here
+            })
+            .catch(err => {
+              console.error('Error adding add-on charge:', err);
+              alert('Failed to add add-on charge. Please try again.');
+            }); 
+
+      },
+      async onCategoryChange() {
+      
+          this.selectedType = null; // reset type
+
+          console.log(this.addonsForm.selectedCategory);
+
+          if (!this.addonsForm.selectedCategory) {
+            this.types = [];
+            return;
+          }
+
+          await this.fetchAddonsListByType(this.addonsForm.selectedCategory);
+          this.types = this.addonsListByType;
+
+        
+      },
+
     async showDrawerDetail() {
       this.visibleComputation = true;
     },      
