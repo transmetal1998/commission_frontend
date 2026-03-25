@@ -10,11 +10,6 @@
 
       <div class="flex-1 flex">
         
-
-        <div class="flex justify-end gap-2">
-          <Button severity="primary" label="Create Sales Order" size="small" @click="openModal('Create')"/>
-          <Button severity="secondary" label="Update" size="small" @click="openModal('Update')"/>
-        </div>
       </div>
 
     </div>
@@ -38,6 +33,7 @@
             paginator
             :rows="5"
             dataKey="id"
+            :pageLinkSize="2"
             :showGridlines="false"
             size="small"
             v-model:filters="salesOrderFilters"
@@ -46,7 +42,9 @@
           >
             <!-- HEADER (Search) -->
             <template #header>
-              <div class="flex justify-end">
+              <div class="flex justify-end gap-2">
+                <Button size="small" severity="primary" @click="openModal('Create')" icon="pi pi-plus  " />
+                <Button size="small" severity="secondary" @click="openModal('Update')" icon="pi pi-pen-to-square" />
                 <IconField>
                   <InputIcon>
                     <i class="pi pi-search" />
@@ -72,20 +70,21 @@
             <Column>
               <template #body="{ data }">
                 <div 
-                  class="mb-2 p-2 rounded cursor-pointer hover:bg-[#F9F8F3]"
+                  class="mb-2 p-2 rounded cursor-pointer hover:text-white hover:bg-[#c52b42]"
+                  :class="isActive && selectedOrderId === data.id ? 'bg-[#c52b42] text-white' : 'border border-gray-300'"
                   style="border: 2px solid #E8E6DE"
                   @click="selectedOrderMethod(data)"
                 >
-                  <p class="font-medium text-[#c52b42]">{{ data.salesOrderNo }}</p>
+                  <p class="font-medium hover:text-white hover:bg-[#c52b42]">{{ data.salesOrderNo }}</p>
 
-                  <small>Customer Ref No:</small>
-                  <p class="text-xs text-gray-500">{{ data.customerRefNo }}</p>
+                  <!-- <small>Customer Ref No:</small> -->
+                  <p class="text-xs hover:text-white hover:bg-[#c52b42]">Customer Ref No: {{ data.customerRefNo }}</p>
 
-                  <small>Customer Name:</small>
-                  <p class="text-xs text-gray-500">{{ data.customerName }}</p>
+                  <!-- <small>Customer Name:</small> -->
+                  <p class="text-xs hover:text-white hover:bg-[#c52b42]">Customer Name: {{ data.customerName }}</p>
 
-                  <small>Date:</small>
-                  <p class="text-xs text-gray-500">
+                  <!-- <small>Date:</small> -->
+                  <p class="text-xs hover:text-white hover:bg-[#c52b42]">Date: 
                     {{ formatDate(data.salesOrderDate) }}
                   </p>
                 </div>
@@ -116,21 +115,14 @@
 
     <div class="bg-gray-200 h-[8px] mb-4 -mx-4"></div>
 
-    <div class="flex gap-2 mb-4">
+    <div class="flex gap-2 justify-end mb-4">
 
       <ButtonGroup>
+          <Button size="small" severity="secondary" @click="showDrawerDetail" label="Add Product" icon="pi pi-plus" />
+          <Button size="small" severity="secondary" @click="showAddons()" label="Add-ons" icon="pi pi-credit-card" />
           <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Remove" icon="pi pi-trash" />
-          <Button size="small" severity="primary" @click="showDrawerDetail" label="Add Product" icon="pi pi-plus" />
-          <Button size="small" severity="primary" @click="showAddons()" label="Add-ons" icon="pi pi-plus  " />
-      </ButtonGroup>
+        </ButtonGroup>
 
-      <!-- <Button severity="secondary" icon="pi pi-trash" @click="deleteRowDetail()" />
-      <Button severity="primary" @click="showDrawerDetail" icon="pi pi-plus"  />
-
-      <div class="ml-auto gap-2 flex">
-        <Button label="FDC Services" size="small" severity="primary" />
-        <Button label="Charges" size="small" severity="primary" @click="visibleRight = true" />
-      </div> -->
     </div>
 
 
@@ -507,7 +499,7 @@ export default {
       }, 
       async saveToAddons() {
 
-          if(!this.addonsForm.selectedCategory || !this.addonsForm.selectedType || !this.addonsForm.quantity || !this.addonsForm.spUnitVat || !this.addonsForm.costUnitVat) {
+          if(!this.addonsForm.selectedCategory || !this.addonsForm.selectedType || !this.addonsForm.quantity) {
             this.$toast.add({
               severity: 'warn',
               summary: 'Warning',
@@ -575,10 +567,15 @@ export default {
     },      
     
     async loadTableData() {
+
       await this.fetchCanvassDetails(this.selectedOrderId).then(() => {
         this.canvassDetailList = this.canvassCostDetails;
       });
       this.visibleComputation = false;
+
+      await this.fetchProductList();
+      this.productCodeListRaw = this.productCodeList.data;
+
     },
     async confirmDelete() {
     
@@ -606,9 +603,9 @@ export default {
     async deleteRowDetail() {
        if (!this.selectedDetails || !this.selectedDetails.length) {
         this.$toast.add({
-          severity: 'warn',
+          severity: 'error',
           summary: 'Warning',
-          detail: 'Please select at least one row to delete.',
+          detail: 'Please select at least one row to remove the Product.',
           life: 1500
         });
         return;

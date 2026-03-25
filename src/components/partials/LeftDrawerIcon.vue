@@ -2,8 +2,9 @@
     <div class="sidebar-container h-full max-h-screen overscroll">
       <div class="p-1">
         <div class="py-1 mb-1">
-          <span class="justify-center flex">
-            <img :src="CSLogo" alt="Commission System Logo" class="logo-img" />
+          <span class="justify-center items-center flex">
+            <Avatar label="CS" class="mr-2" size="large" style="background-color: #ece9fc; color: #2a1261" />
+            <!-- <img :src="CSLogo" alt="Commission System Logo" class="logo-img" /> -->
           </span>
         </div>
       </div>
@@ -80,7 +81,7 @@
                       icon: 'pi pi-table',
                       items: [
                           {
-                              label: 'Service',
+                              label: '',
                               icon: 'pi pi-chart-bar',
                               route: '/salescore/service'
                           },
@@ -92,39 +93,39 @@
                       icon: 'pi pi-user',
                       items: [
                           {
-                              label: 'Sales Quota',
+                              label: '',
                               icon: 'pi pi-chart-bar',
                               route: '/newhireprocess/guidelines'
                           },
                           {
-                              label: 'Assignment of Products, Service and Solutions',
+                              label: '',
                               icon: 'pi pi-book',
                               route: '/newhireprocess/unitsetup'
                           },
                           {
-                              label: 'Hurdle Rate',
+                              label: '',
                               icon: 'pi pi-chart-scatter',
                               route: '/newhireprocess/addunit'
                           },
 
                           {
-                              label: 'Gate Percentage',
+                              label: '',
                               icon: 'pi pi-chart-line',
                               route: '/newhireprocess/addunit'
                           },
                           {
-                              label: 'Commission Entitlement',
+                              label: '',
                               icon: 'pi pi-folder',
                               route: '/newhireprocess/addunit'
                           },
                       {
-                              label: 'Sales Commission Rates',
+                              label: '',
                               icon: 'pi pi-percentage',
                               route: '/newhireprocess/addunit'
                           },
 
                             {
-                              label: 'YTD Rates',
+                              label: '',
                               icon: 'pi pi-wallet',
                               route: '/newhireprocess/addunit'
                           },
@@ -137,12 +138,12 @@
                       icon: 'pi pi-desktop',
                       items: [
                           {
-                              label: 'Gross Profit Report',
+                              label: '',
                               icon: 'pi pi-chart-bar',
                               route: '/newhireprocess/guidelines'
                           },
                           {
-                              label: 'AM/ PM Report and Monitoring',
+                              label: '',
                               icon: 'pi pi-address-book',
                               route: '/newhireprocess/guidelines'
                           },
@@ -155,17 +156,17 @@
                       icon: 'pi pi-wrench',
                       items: [
                           {
-                              label: 'User',
+                              label: '',
                               icon: 'pi pi-user ',
                               route: '/settings/usercreation'
                           },
                           {
-                              label: 'Audit Log',
+                              label: '',
                               icon: 'pi pi-file',
                               route: '/settings/usercreation'
                           },  
                           {
-                              label: 'Department',
+                              label: '',
                               icon: 'pi pi-users',
                               route: '/settings/usercreation'
                           },

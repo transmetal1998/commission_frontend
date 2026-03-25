@@ -9,10 +9,18 @@
         <LeftDrawer />
       </aside>
     </transition>
+    <transition name="slide-side">
+      <aside 
+        v-if="isToggled" 
+        class="w-20 h-full side-panel flex flex-col fixed left-0 top-0 z-20 shadow-xl"
+      >
+        <LeftDrawerIcon />
+      </aside>
+    </transition>
 
     <div 
       class="flex flex-1 flex-col h-full overflow-hidden transition-all duration-300 ease-in-out" 
-      :class="isToggled ? 'ml-0' : 'ml-72'"
+      :class="isToggled ? 'ml-20' : 'ml-72'"
     >
       <Menubar class="w-full header-custom"> 
         <template #start>

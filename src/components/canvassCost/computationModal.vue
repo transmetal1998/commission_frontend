@@ -3,197 +3,283 @@
         :visible="visible"
          @update:visible="$emit('update:visible', $event)" 
         modal 
-        header="Product Details" 
+        :header="synching ? 'Fetching latest data from SAP...' : 'Canvass Cost Detail'" 
         :style="{ width: '60vw' }" 
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+
         
-        <div class="flex gap-4">
-        <div class="w-2/3">
-                <div>
-                    <small>Product Code</small>
-                    <InputGroup>
-                        <InputText placeholder="Enter Item Number" 
-                        v-model="localForm.productCode" 
-                        type="text" 
-                        class="w-full" 
-                        size="small"/>
-                        <InputGroupAddon>
-                            <Button icon="pi pi-search" @click="checkProductCode" size="small" severity="secondary" variant="text"/>
-                        </InputGroupAddon>
-                    </InputGroup>
-                </div>
-                <div>
-                    <small>Category</small>
-                    <InputText v-model="localForm.category" type="text" class="w-full" size="small" />
-                  </div>
+        <div class="flex gap-4" v-if="synching">
+          <div class="w-2/3">
 
                   <div>
-                    <small>Quantity</small>
-                    <InputNumber v-model="localForm.quantity" :minFractionDigits="2" @blur="computeRaw()" type="text" class="w-full" size="small" />
+                      <Skeleton width="5rem" borderRadius="4px" class="mb-2"></Skeleton>
+                      <Skeleton height="2rem" class="mb-2" borderRadius="8px"></Skeleton>
                   </div>
-
                   <div>
-                    <small>Selling Price Unit VAT</small>
-                    <InputNumber v-model="localForm.spUnitVat" :minFractionDigits="2" @blur="computeRaw()" type="text" class="w-full" size="small" />
-                  </div>
-
-                  <div>
-                  <small>Cost Unit VAT</small>
-                      <InputNumber 
-                        v-model="localForm.costRawUnitVat" 
-                        :minFractionDigits="2"
-                        @blur="computeRaw()"
-                        type="text" 
-                        size="small" 
-                        class="w-full"
-                      />
-                  </div>
-                <div class="flex gap-2 mt-2">
-                    <Button 
-                      icon="pi pi-calculator"
-                      
-                      size="small" 
-                      severity="info" 
-                      @click="computeRaw()" 
-                    />
-                    <Button 
-                      icon="pi pi-sync"
-                      
-                      size="small" 
-                      severity="info" 
-                    />
-                    <Button 
-                      label="Save" 
-                      class="w-full"
-                      size="small" 
-                      severity="primary" 
-                      @click="saveCanvassDetail()" 
-                    />
-                  </div>
-                  
-            </div>
-            <div class="w-full">
-
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small  class="text-[#c52b42] font-bold">Description</small>
+                      <Skeleton width="5rem" borderRadius="4px" class="mb-2"></Skeleton>
+                      <Skeleton height="2rem" class="mb-2" borderRadius="8px"></Skeleton>
                     </div>
-                    <div class="flex-1">
-                    <small>: {{ localForm.description }}</small>
-                    </div>
-                  </div>
 
+                    <div>
+                      <Skeleton width="5rem" borderRadius="4px" class="mb-2"></Skeleton>
+                      <Skeleton height="2rem" class="mb-2" borderRadius="8px"></Skeleton>
+                    </div>
+
+                    <div>
+                      <Skeleton width="5rem" borderRadius="4px" class="mb-2"></Skeleton>
+                      <Skeleton height="2rem" class="mb-2" borderRadius="8px"></Skeleton>
+                    </div>
+
+                    <div>
+                        <Skeleton width="5rem" borderRadius="4px" class="mb-2"></Skeleton>
+                        <Skeleton height="2rem" class="mb-2" borderRadius="8px"></Skeleton>
+                    </div>
                   <div class="flex gap-2 mt-2">
-                    <div class="w-1/3">
-                      <small class="text-[#c52b42] font-bold">Selling Price</small>
-                    </div>
-                  </div>
+                      <Skeleton width="3rem" height="2rem" borderRadius="4px" class="mb-2"></Skeleton>
+                      <Skeleton width="3rem" height="2rem" borderRadius="4px" class="mb-2"></Skeleton>
+                      <Skeleton width="100%" height="2rem" borderRadius="4px" class="mb-2"></Skeleton>
 
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small>Quantity VAT</small>
                     </div>
-                    <div class="flex-1">
-                    <small>: {{ localForm.spQtyVat }}</small>
-                    </div>
-                  </div>
-                  
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small>Unit w/o VAT</small>
-                    </div>
-                    <div class="flex-1">
-                    <small>: {{ localForm.spUnitWoVat }}</small>
-                    </div>
-                  </div>
-
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small>Quantity w/o VAT</small>
-                    </div>
-                    <div class="flex-1">
-                      <small>: {{ localForm.spQtyWoVat }}</small>
-                    </div>
-                  </div>
-
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small class="text-[#c52b42] font-bold">Cost</small>
-                    </div>
-                  </div>
-          
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small>Unit VAT x 12 months</small>
-                    </div>
-                    <div class="flex-1">
-                    <small>: {{ localForm.costUnitVat }}</small>
-                    </div>
-                  </div>
+                    
+          </div>
+          <div class="w-full">
 
                 <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small>Quantity VAT</small>
-                    </div>
-                    <div class="flex-1">
-                    <small>: {{ localForm.costQuantityVat }}</small>
-                    </div>
+                  <div class="w-1/3">
+                    <Skeleton width="5rem" borderRadius="4px" class="mb-2"></Skeleton>
                   </div>
-
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small>Unit w/o VAT</small>
-                    </div>
-                    <div class="flex-1">
-                    <small>: {{ localForm.costUnitWoVat }}</small>
-                    </div>
+                  <div class="flex-1">
+                  <Skeleton width="15rem" borderRadius="4px" class="mb-2"></Skeleton>
                   </div>
+                </div>
 
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small>Quantity w/o VAT</small>
-                    </div>
-                    <div class="flex-1">
-                    <small>: {{ localForm.costQuantityWoVat }}</small>
-                    </div>
+                <div class="flex gap-2 mt-2">
+                  <div class="w-1/3">
+                    <Skeleton width="5rem" borderRadius="4px" class="mb-2"></Skeleton>
                   </div>
-
-                  <div class="flex gap-2 mt-2">
-                    <div class="w-1/3">
-                      <small class="text-[#c52b42] font-bold">Others</small>
-                    </div>
+                  <div class="flex-1">
+                    <Skeleton width="5rem" borderRadius="4px" class="mb-2"></Skeleton>
                   </div>
+                </div>
 
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small>Profit Margin w/o VAT</small>
-                    </div>
-                    <div class="flex-1">
-                    <small>: {{ localForm.profitMarginWoVat }}</small>
-                    </div>
+                <div class="flex gap-2">
+                  <Skeleton width="100%" height="4rem" borderRadius="8px"></Skeleton>
+                </div>
+
+                <div class="flex gap-2 mt-2">
+                  <div class="w-1/3">
+                    <Skeleton width="5rem" borderRadius="4px" class="mb-2"></Skeleton>
                   </div>
+                </div>
+        
+                <div class="flex gap-2">
+                  <Skeleton width="100%" height="4rem" borderRadius="8px"></Skeleton>
+                </div>
 
-
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small>Profit Margin VAT</small>
-                    </div>
-                    <div class="flex-1">
-                    <small>: {{ localForm.profitMargin }}</small>
-                    </div>
+                <div class="flex gap-2 mt-2">
+                  <div class="w-1/3">
+                    <Skeleton width="5rem" borderRadius="4px" class="mb-2"></Skeleton>
                   </div>
+                </div>
 
-                  <div class="flex gap-2">
-                    <div class="w-1/3">
-                      <small>Target Selling Price VAT</small>
-                    </div>
-                    <div class="flex-1">
-                    <small>: {{ localForm.targetSellingPriceVat }}</small>
-                    </div>
-                  </div>
+                <div class="flex gap-2">
+                  <Skeleton width="100%" height="4rem" borderRadius="8px"></Skeleton>
+                </div>
 
-            </div>
+          </div>
         </div>
+
+        <div class="flex gap-4" v-else>
+          <div class="w-2/3">
+                  <div>
+                      <small>Product Code</small>
+                      <InputGroup>
+                          <InputText placeholder="Enter Item Number" 
+                          v-model="localForm.productCode" 
+                          type="text" 
+                          class="w-full" 
+                          size="small"/>
+                          <InputGroupAddon>
+                              <Button icon="pi pi-search" @click="checkProductCode" size="small" severity="primary"/>
+                          </InputGroupAddon>
+                      </InputGroup>
+                  </div>
+                  <div>
+                      <small>Category</small>
+                      <InputText v-model="localForm.category" type="text" class="w-full" size="small" />
+                    </div>
+
+                    <div>
+                      <small>Quantity</small>
+                      <InputNumber v-model="localForm.quantity" :minFractionDigits="2" @blur="computeRaw()" type="text" class="w-full" size="small" />
+                    </div>
+
+                    <div>
+                      <small>Selling Price Unit VAT</small>
+                      <InputNumber v-model="localForm.spUnitVat" :minFractionDigits="2" @blur="computeRaw()" type="text" class="w-full" size="small" />
+                    </div>
+
+                    <div>
+                    <small>Cost Unit VAT <span style="color: red; font-size: 8px; font-style: italic;">Value will be multiplied by 12 (annualized)</span></small>
+                        <InputNumber 
+                          v-model="localForm.costRawUnitVat" 
+                          :minFractionDigits="2"
+                          @blur="computeRaw()"
+                          type="text" 
+                          size="small" 
+                          class="w-full"
+                        />
+                    </div>
+                  <div class="flex gap-2 mt-2">
+                      <Button 
+                        icon="pi pi-calculator"
+                        
+                        size="small" 
+                        severity="secondary" 
+                        @click="computeRaw()" 
+                      />
+                      <Button 
+                        icon="pi pi-sync"
+                        @click="clickManualSync()"
+                        size="small" 
+                        severity="primary" 
+                      />
+                      <Button 
+                        label="Save" 
+                        class="w-full"
+                        size="small" 
+                        severity="primary" 
+                        @click="saveCanvassDetail()" 
+                      />
+                    </div>
+                    
+          </div>
+          <div class="w-full">
+
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small  class="text-[#c52b42] font-bold">Description</small>
+                  </div>
+                  <div class="flex-1">
+                  <small>: {{ localForm.description }}</small>
+                  </div>
+                </div>
+
+                <div class="flex gap-2 mt-2">
+                  <div class="w-1/3">
+                    <small class="text-[#c52b42] font-bold">Selling Price</small>
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small>Quantity VAT</small>
+                  </div>
+                  <div class="flex-1">
+                  <small>: {{ localForm.spQtyVat }}</small>
+                  </div>
+                </div>
+                
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small>Unit w/o VAT</small>
+                  </div>
+                  <div class="flex-1">
+                  <small>: {{ localForm.spUnitWoVat }}</small>
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small>Quantity w/o VAT</small>
+                  </div>
+                  <div class="flex-1">
+                    <small>: {{ localForm.spQtyWoVat }}</small>
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small class="text-[#c52b42] font-bold">Cost</small>
+                  </div>
+                </div>
+        
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small>Unit VAT x 12 months</small>
+                  </div>
+                  <div class="flex-1">
+                  <small>: {{ localForm.costUnitVat }}</small>
+                  </div>
+                </div>
+
+              <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small>Quantity VAT</small>
+                  </div>
+                  <div class="flex-1">
+                  <small>: {{ localForm.costQuantityVat }}</small>
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small>Unit w/o VAT</small>
+                  </div>
+                  <div class="flex-1">
+                  <small>: {{ localForm.costUnitWoVat }}</small>
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small>Quantity w/o VAT</small>
+                  </div>
+                  <div class="flex-1">
+                  <small>: {{ localForm.costQuantityWoVat }}</small>
+                  </div>
+                </div>
+
+                <div class="flex gap-2 mt-2">
+                  <div class="w-1/3">
+                    <small class="text-[#c52b42] font-bold">Others</small>
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small>Profit Margin w/o VAT</small>
+                  </div>
+                  <div class="flex-1">
+                  <small>: {{ localForm.profitMarginWoVat }}</small>
+                  </div>
+                </div>
+
+
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small>Profit Margin VAT</small>
+                  </div>
+                  <div class="flex-1">
+                  <small>: {{ localForm.profitMargin }}</small>
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <div class="w-1/3">
+                    <small>Target Selling Price VAT</small>
+                  </div>
+                  <div class="flex-1">
+                  <small>: {{ localForm.targetSellingPriceVat }}</small>
+                  </div>
+                </div>
+
+          </div>
+        </div>
+
+
+
+
     </Dialog>
 </template>
 <script>
@@ -223,11 +309,18 @@ export default {
         isValidProductCode: false,
         localForm: { ...this.form },
         localProductCodeListRaw: [...this.propsProductListRaw],
+        synching: false
     };
 },
+computed: {
+    ...mapState(useCanvasCost, {
+            synchingSAP: 'synchingSAP'
+        }),
+  },
 methods: {
     ...mapActions(useCanvasCost, {
-            postCanvasCostDetail: 'postCanvasCostDetail'
+            postCanvasCostDetail: 'postCanvasCostDetail',
+            fetchProductSynchingSAP: 'fetchProductSynchingSAP'  
         }),
      async saveCanvassDetail() {
 
@@ -282,10 +375,30 @@ methods: {
         this.$emit('saved', this.localForm);
 
         } else {
-          this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Please enter a valid product code before saving.', life: 1500 });
+          this.$toast.add({ severity: 'error', summary: 'Error', detail: 'The entered product code was not found in the database. If the product exists in SAP, please click "Sync SAP" to retrieve the latest records.', life: 2000 });
           this.isValidProductCode = false;
           this.localForm.productCode = '';
         }
+
+    },
+    clickManualSync() {
+      this.synching = true;
+
+      setTimeout(async () => {
+
+          await this.fetchProductSynchingSAP().then(() => {
+            this.synching = false;
+            this.$toast.add({ severity: 'success', summary: 'Success', detail: `Synching has been successfully done. Inserted Record: ${this.synchingSAP.inserted} `, life: 6000 });
+          }).catch(() => {
+            this.synching = false;
+            this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to fetch data from SAP. Please try again.', life: 1500 });
+          });
+
+           this.$emit('saved', this.localForm);
+
+      }, 6000); // Simulate a delay for the sync process
+
+     
 
     },
     checkProductCode() {

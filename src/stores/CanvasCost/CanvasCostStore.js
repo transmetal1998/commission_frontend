@@ -10,6 +10,7 @@ export const useCanvasCost = defineStore('canvasCost', {
         addonsListByCategory: [],
         addonsListByType: [],
         canvasCostAddonsCharges: [],
+        synchingSAP: [],
           
     }),
     getters: {
@@ -33,6 +34,9 @@ export const useCanvasCost = defineStore('canvasCost', {
         },
         getCanvasCostAddonsCharges(state) {
             return state.canvasCostAddonsCharges;
+        },
+        getSynchingSAP(state){
+            return state.synchingSAP;
         }
     },
     actions: {
@@ -46,6 +50,20 @@ export const useCanvasCost = defineStore('canvasCost', {
             } catch (err) {
                 
                 console.log('Error fetching product list:', err);
+                return false;
+            
+            }
+        },
+        async fetchProductSynchingSAP() {
+            try {
+                
+                const response = await api.post('/ItemSap/sync');
+                this.synchingSAP = response.data;
+                return true;
+
+            } catch (err) {
+                
+                console.log('Error fetching synching SAP data:', err);
                 return false;
             
             }
