@@ -260,6 +260,7 @@
     <ComputationModal
       v-model:visible="visibleComputation"
       :form="formData"
+      :headerForm="canvassCostHeaderDetails"
       :selectedID="selectedOrderId"
       :propsProductListRaw="productCodeListRaw"
       @saved="loadTableData"
@@ -462,8 +463,19 @@ export default {
     await this.fetchProductList();
     this.productCodeListRaw = this.productCodeList.data;
 
-    await this.fetchAddonsListByCategory();
-    this.addonsListByCategoryData = this.addonsListByCategory;   
+    // if(this.canvassCostData.businesUnit == 'FDC') {
+
+      await this.fetchAddonsListByCategory();
+      this.addonsListByCategoryData = this.addonsListByCategory;
+      // console.log(this.addonsListByCategoryData);
+
+    // } else {
+
+    //   await this.fetchAddonsListByCategory();
+    //   this.addonsListByCategoryData = ['Charges'];
+
+    // }
+    
       
   },
   methods: {
@@ -481,6 +493,7 @@ export default {
             fetchCanvasCostAddonsChargesByHeader: 'fetchCanvasCostAddonsChargesByHeader'   
         }),
       async showAddons() {
+
         if(!this.selectedOrderId) {
           this.$toast.add({
             severity: 'warn',

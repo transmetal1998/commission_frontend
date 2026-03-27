@@ -156,12 +156,21 @@
           </div>
           <div class="w-full">
 
-                <div class="flex gap-2">
+                <div class="flex gap-2" v-if="localHeaderForm.businesUnit == 'FDC'">
                   <div class="w-1/3">
                     <small  class="text-[#c52b42] font-bold">Description</small>
                   </div>
                   <div class="flex-1">
-                  <small>: {{ localForm.description }}</small>
+                  <small>: {{ localForm.description }} </small>
+                  </div>
+                </div>
+
+                <div class="flex gap-2" v-else>
+                  <div class="w-1/3">
+                    <small  class="text-[#c52b42] font-bold">Description</small>
+                  </div>
+                  <div class="flex-1">
+                    <InputText v-model="localForm.description" type="text" class="w-full" size="small" />
                   </div>
                 </div>
 
@@ -298,6 +307,10 @@ export default {
     propsProductListRaw: {
       type: Object,
       required: true
+    },
+    headerForm: {
+      type: Object,
+      required: true
     }
   },
   emits: [
@@ -309,6 +322,7 @@ export default {
         isValidProductCode: false,
         localForm: { ...this.form },
         localProductCodeListRaw: [...this.propsProductListRaw],
+        localHeaderForm: { ...this.headerForm },
         synching: false
     };
 },
@@ -317,6 +331,9 @@ computed: {
             synchingSAP: 'synchingSAP'
         }),
   },
+mounted() {
+    
+},
 methods: {
     ...mapActions(useCanvasCost, {
             postCanvasCostDetail: 'postCanvasCostDetail',
@@ -375,7 +392,7 @@ methods: {
         this.$emit('saved', this.localForm);
 
         } else {
-          this.$toast.add({ severity: 'error', summary: 'Error', detail: 'The entered product code was not found in the database. If the product exists in SAP, please click "Sync SAP" to retrieve the latest records.', life: 2000 });
+          this.$toast.add({ severity: 'error', summary: 'Error', detail: 'The entered product code was not found in the database. If the product exists in SAP, please click "Sync SAP" to retrieve the latest records.', life: 3000 });
           this.isValidProductCode = false;
           this.localForm.productCode = '';
         }
@@ -415,7 +432,7 @@ methods: {
         this.isValidProductCode = true;
 
       } else {
-        this.$toast.add({ severity: 'error', summary: 'Error', detail: 'The entered product code was not found in the database. If the product exists in SAP, please click "Sync SAP" to retrieve the latest records.', life: 1500 });
+        this.$toast.add({ severity: 'error', summary: 'Error', detail: 'The entered product code was not found in the database. If the product exists in SAP, please click "Sync SAP" to retrieve the latest records.', life: 3000 });
         this.localForm.productCode = "";
         this.isValidProductCode = false;
       }
@@ -469,7 +486,13 @@ watch: {
         this.localProductCodeListRaw = [...val];
         },
         deep: true
-    }
-}
+    },
+    headerForm: {
+        handler(val) {
+        this.localHeaderForm = { ...val };
+        },
+        deep: true
+      }
+  }
 }
 </script>
