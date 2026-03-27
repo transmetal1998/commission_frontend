@@ -1,90 +1,79 @@
 <template>
   <div class="login-container">
     <div 
-      class="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 font-sans relative overflow-hidden bg-cover bg-center bg-no-repeat bg-fixed"
+      class="min-h-screen w-full flex items-center justify-center p-4 font-sans relative overflow-hidden bg-cover bg-center bg-no-repeat bg-fixed"
       :style="{ backgroundImage: `url(${BackgroundImage})` }"
     >
       <div class="absolute inset-0 bg-black/50 backdrop-blur-[2px] z-0"></div>
 
       <Toast position="top-right" />
 
-      <div class="relative z-10 flex flex-col lg:flex-row items-stretch justify-center w-full max-w-4xl shadow-[0_50px_100px_rgba(0,0,0,0.5)] rounded-[40px] overflow-hidden fade-in-up">
+      <div class="relative z-10 flex flex-col md:flex-row items-stretch justify-center w-full max-w-[650px] shadow-[0_30px_60px_rgba(0,0,0,0.5)] rounded-[24px] overflow-hidden fade-in-up bg-white">
         
-        <div 
-          class="w-full lg:w-1/2 bg-white/95 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-12 xl:p-16 border-r border-gray-100"
-          style="border-top-right-radius: 0; border-bottom-right-radius: 0;"
-        >
-          <div class="flex flex-col items-center space-y-4 sm:space-y-6 lg:space-y-8 xl:space-y-10">
-            <img :src="FdcLogo" alt="First Datacorp" class="w-full h-auto max-w-[120px] sm:max-w-[150px] lg:max-w-[180px] xl:max-w-[220px] object-contain" />
-            
-            <div class="w-12 sm:w-16 h-[1px] bg-gray-200"></div>
-            
-            <div class="flex flex-col items-center space-y-2 sm:space-y-3 lg:space-y-4">
-              <img :src="CfiLogo" alt="Commerce First" class="w-full h-auto max-w-[100px] sm:max-w-[130px] lg:max-w-[160px] xl:max-w-[200px] object-contain" />
-              <p class="text-gray-400 font-black tracking-[0.2em] uppercase text-[8px] sm:text-[9px] lg:text-[10px] text-center">
-                Enterprise Commission Management
-              </p>
+        <div class="w-full md:w-5/12 bg-white/95 flex flex-col items-center justify-center p-6 border-b md:border-b-0 md:border-r border-gray-100">
+          <div class="flex flex-col items-center space-y-4">
+            <img :src="FdcLogo" alt="First Datacorp" class="" style="width: 145px; height: auto;"/>
+            <div class="w-8 h-[1px] bg-gray-200"></div>
+            <div class="flex flex-col items-center space-y-2 text-center">
+              <img :src="CfiLogo" alt="Commerce First" class="" style="width: 155px; height: auto;" />
             </div>
           </div>
         </div>
 
         <div 
-          class="w-full lg:w-1/2 bg-white flex flex-col"
+          class="w-full md:w-7/12 flex flex-col bg-white"
           :class="{ 'shake': triggerShake }"
-          style="border-top-left-radius: 0; border-bottom-left-radius: 0;"
         >
-          <div class="bg-[#1A1A1A] pt-6 sm:pt-8 lg:pt-10 pb-6 sm:pb-8 px-6 sm:px-8 lg:px-10 text-center relative overflow-hidden flex flex-col items-center justify-center">
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 sm:w-40 lg:w-48 h-32 sm:h-40 lg:h-48 bg-[#C6011F] opacity-20 blur-[40px] sm:blur-[50px] lg:blur-[60px] rounded-full"></div>
-            <img :src="CsLogo" alt="Commission System" class="relative z-10 h-10 sm:h-12 lg:h-14 xl:h-16 w-auto object-contain brightness-0 invert" />
-          </div>
-
-          <div class="p-6 sm:p-8 lg:p-10 flex-grow">
-            <div class="text-center mb-6 sm:mb-8">
-              <h2 class="text-lg sm:text-xl font-black text-gray-900 tracking-wider uppercase">Portal Login</h2>
-              <div class="w-8 sm:w-10 h-1 bg-[#C6011F] mx-auto mt-2 rounded-full"></div>
+          <div class="p-6 md:p-8 flex-grow">
+            <div class="text-center mb-8">
+              <h2 class="text-[22px] font-black text-gray-900 tracking-wider uppercase">Commission System</h2>
+              <div class="w-6 h-0.5 bg-[#C6011F] mx-auto mt-1 rounded-full"></div>
             </div>
 
-            <form @submit.prevent="submitLogin" class="space-y-4 sm:space-y-5">
+            <form @submit.prevent="submitLogin" class="space-y-6">
               <FloatLabel>
                 <InputText id="username" v-model="loginForm.username" class="w-full custom-input" :disabled="isLocked" />
-                <label for="username" class="font-bold text-gray-400 ml-2 text-sm">Username</label>
+                <label for="username" class="font-bold text-gray-400 ml-1 text-xs">Username</label>
               </FloatLabel>
 
               <FloatLabel>
                 <Password id="password" v-model="loginForm.password" toggleMask :feedback="false" class="w-full" inputClass="w-full custom-input" :disabled="isLocked" />
-                <label for="password" class="font-bold text-gray-400 ml-2 text-sm">Password</label>
+                <label for="password" class="font-bold text-gray-400 ml-1 text-xs">Password</label>
               </FloatLabel>
 
               <Button
                 type="submit"
-                :label="isLocked ? `LOCKED` : 'Secure Sign In'"
-                class="w-full py-3 sm:py-4 text-sm font-black tracking-widest shadow-lg rounded-xl border-none uppercase text-white transition-all active:scale-[0.98]"
+                :label="isLocked ? `LOCKED` : 'Login'"
+                class="w-full py-3 text-xs font-black tracking-widest shadow-md rounded-lg border-none uppercase text-white transition-all active:scale-[0.98]"
                 :style="isLocked ? 'background-color: #94a3b8;' : 'background-color: #C6011F;'"
                 :loading="loading"
               />
             </form>
 
-            <div class="mt-6 sm:mt-8 text-center">
-              <button class="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-[#C6011F] transition-colors">
-                Forgot Password?
-              </button>
-            </div>
+            
           </div>
         </div>
       </div>
 
-      <Dialog v-model:visible="showModal" modal :header="modalHeader" :style="{ width: '90vw', maxWidth: '380px' }" :closable="false" class="custom-dialog">
-        <div class="flex flex-col items-center justify-center pt-6 sm:pt-8 pb-4 sm:pb-6 text-center px-4 sm:px-6">
-          <div :class="statusClass" class="w-16 sm:w-20 h-16 sm:h-20 rounded-full flex items-center justify-center mb-4 sm:mb-5 shadow-inner">
-            <i :class="statusIcon" class="text-3xl sm:text-4xl"></i>
+      <Dialog 
+        v-model:visible="showModal" 
+        modal 
+        :header="modalHeader" 
+        :style="{ width: '85vw', maxWidth: '340px' }" 
+        :closable="!isLocked" 
+        class="custom-dialog"
+      >
+        <div class="flex flex-col items-center justify-center pt-6 pb-4 text-center px-4">
+          <div :class="statusClass" class="w-14 h-14 rounded-full flex items-center justify-center mb-4 shadow-inner">
+            <i :class="statusIcon" class="text-2xl"></i>
           </div>
-          <h3 class="text-lg sm:text-xl font-black text-gray-900 mb-2">{{ modalTitle }}</h3>
-          <p class="text-gray-400 font-medium text-sm leading-relaxed">{{ modalMessage }}</p>
+          <h3 class="text-base md:text-lg font-black text-gray-900 mb-1.5">{{ modalTitle }}</h3>
+          <p class="text-gray-400 font-medium text-[11px] md:text-xs leading-relaxed px-2">{{ modalMessage }}</p>
         </div>
         <template #footer>
-          <div class="flex justify-center w-full pb-6 sm:pb-8 px-6 sm:px-8">
-            <Button v-if="!isSuccess && !isLocked" label="Try Again" @click="showModal = false" class="w-full bg-[#1A1A1A] border-none py-3 sm:py-3.5 rounded-xl font-bold uppercase text-xs text-white" />
-            <div v-if="isLocked" class="text-orange-600 font-black bg-orange-50 px-4 sm:px-6 py-3 sm:py-4 rounded-xl w-full text-center border-2 border-orange-100">
+          <div class="flex justify-center w-full pb-6 px-6">
+            <Button v-if="!isSuccess && !isLocked" label="Try Again" @click="showModal = false" class="w-full bg-[#1A1A1A] border-none py-2.5 rounded-lg font-bold uppercase text-[10px] text-white" />
+            <div v-if="isLocked" class="text-orange-600 font-black bg-orange-50 px-4 py-3 rounded-lg w-full text-center border border-orange-100 text-xs">
               Wait {{ lockdownTimer }}s
             </div>
           </div>
@@ -95,31 +84,54 @@
 </template>
 
 <style scoped>
-/* Ensure both cards take equal vertical space on desktop */
-@media (min-width: 1024px) {
-  .lg\:self-stretch {
-    align-self: stretch !important;
-  }
+/* Improved FloatLabel Fix */
+:deep(.p-float-label) {
+  display: block;
+  position: relative;
 }
 
-/* Custom Input Styling */
+/* Base input styling */
 :deep(.custom-input) { 
-  padding: 1rem 1rem 0.5rem 1rem !important; 
-  border-radius: 12px !important;
+  padding: 1.2rem 0.8rem 0.5rem 0.8rem !important; /* Increased top padding to make room for label */
+  border-radius: 10px !important;
   background-color: #F9FAFB !important;
-  border: 2px solid #F3F4F6 !important;
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
+  border: 1px solid #E5E7EB !important;
+  font-size: 0.85rem !important;
+  width: 100%;
 }
 
 :deep(.custom-input:focus) { 
-  border-color: #C6011F33 !important;
-  box-shadow: 0 10px 20px -5px rgba(198, 1, 31, 0.05) !important;
+  border-color: #C6011F !important;
+  background-color: #fff !important;
+  box-shadow: 0 0 0 2px rgba(198, 1, 31, 0.1) !important;
+}
+
+/* Force label positioning to prevent overlapping */
+:deep(.p-float-label label) {
+  left: 0.8rem;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+/* Position when floating (focused or has value) */
+:deep(.p-float-label input:focus ~ label),
+:deep(.p-float-label input.p-filled ~ label),
+:deep(.p-float-label .p-inputwrapper-focus ~ label),
+:deep(.p-float-label .p-inputwrapper-filled ~ label) {
+  top: 0.45rem !important; /* Moves label up into the top padding area */
+  font-size: 0.65rem !important;
+  color: #C6011F !important;
+  font-weight: 800 !important;
+}
+
+/* Password wrapper adjustments */
+:deep(.p-password) {
+  width: 100%;
 }
 
 /* Animations */
-.fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
 .shake { animation: shake-horizontal 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
 @keyframes shake-horizontal {
@@ -128,18 +140,7 @@
   30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
 }
 
-:deep(.custom-dialog) { border-radius: 30px; overflow: hidden; }
-
-/* Additional responsive adjustments */
-@media (max-width: 640px) {
-  .max-w-4xl {
-    max-width: 100%;
-    margin: 0 1rem;
-  }
-  .rounded-[40px] {
-    border-radius: 20px;
-  }
-}
+:deep(.custom-dialog) { border-radius: 20px; overflow: hidden; border: none; }
 </style>
 
 <script setup>
@@ -147,10 +148,10 @@ import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth/authStore';
 
+// Assets
 import BackgroundImage from '@/assets/bg.jpg';
 import FdcLogo from '@/assets/fdc.png';
 import CfiLogo from '@/assets/cfi.png';
-import CsLogo from '@/assets/cs.png';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -194,9 +195,7 @@ const submitLogin = async () => {
       modalMessage.value = "Authenticating... Redirecting to dashboard.";
       showModal.value = true;
       setTimeout(() => router.push('/dashboard'), 1500);
-    } else {
-      handleFailure();
-    }
+    } else { handleFailure(); }
   } catch (err) { handleFailure(); }
   finally { loading.value = false; }
 };
@@ -231,4 +230,4 @@ const startLockout = () => {
     }
   }, 1000);
 };
-</script>,
+</script>
