@@ -55,6 +55,21 @@ const generateRoutes = (moduleStore) => {
           component: () => import('../pages/salesCore/service.vue'),
           // meta: { requiresAuth: true },
         },
+        {
+          path: '/salesparameter/hurdle',
+          component: () => import('../pages/salesParameter/hurdle.vue'),
+          // meta: { requiresAuth: true },
+        },
+        {
+          path: '/salesparameter/salescommission',
+          component: () => import('../pages/salesParameter/salescommission.vue'),
+          // meta: { requiresAuth: true },
+        },
+        {
+          path: '/salesparameter/salesquota',
+          component: () => import('../pages/salesParameter/salesquota.vue'),
+          // meta: { requiresAuth: true },
+        },
           
     
       ],

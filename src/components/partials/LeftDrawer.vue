@@ -92,42 +92,20 @@
                       icon: 'pi pi-user',
                       items: [
                           {
-                              label: 'Sales Quota',
-                              icon: 'pi pi-chart-bar',
-                              route: '/newhireprocess/guidelines'
-                          },
-                          {
-                              label: 'Assignment of Products, Service and Solutions',
-                              icon: 'pi pi-book',
-                              route: '/newhireprocess/unitsetup'
-                          },
-                          {
                               label: 'Hurdle Rate',
                               icon: 'pi pi-chart-scatter',
-                              route: '/newhireprocess/addunit'
-                          },
-
-                          {
-                              label: 'Gate Percentage',
-                              icon: 'pi pi-chart-line',
-                              route: '/newhireprocess/addunit'
+                              route: '/salesparameter/hurdle'
                           },
                           {
-                              label: 'Commission Entitlement',
-                              icon: 'pi pi-folder',
-                              route: '/newhireprocess/addunit'
-                          },
-                      {
                               label: 'Sales Commission Rates',
                               icon: 'pi pi-percentage',
-                              route: '/newhireprocess/addunit'
+                              route: '/salesparameter/salescommission'
                           },
-
-                            {
-                              label: 'YTD Rates',
-                              icon: 'pi pi-wallet',
-                              route: '/newhireprocess/addunit'
-                          },
+                          {
+                              label: 'Sales Quota',
+                              icon: 'pi pi-chart-bar',
+                              route: '/salesparameter/salesquota'
+                          }
                         ]
                   },
 

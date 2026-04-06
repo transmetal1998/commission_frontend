@@ -92,43 +92,21 @@
                       label: '',
                       icon: 'pi pi-user',
                       items: [
+                         {
+                              label: '',
+                              icon: 'pi pi-chart-scatter',
+                              route: '/salesparameter/hurdle'
+                          },
+                          {
+                              label: '',
+                              icon: 'pi pi-percentage',
+                              route: '/salesparameter/salescommission'
+                          },
                           {
                               label: '',
                               icon: 'pi pi-chart-bar',
-                              route: '/newhireprocess/guidelines'
-                          },
-                          {
-                              label: '',
-                              icon: 'pi pi-book',
-                              route: '/newhireprocess/unitsetup'
-                          },
-                          {
-                              label: '',
-                              icon: 'pi pi-chart-scatter',
-                              route: '/newhireprocess/addunit'
-                          },
-
-                          {
-                              label: '',
-                              icon: 'pi pi-chart-line',
-                              route: '/newhireprocess/addunit'
-                          },
-                          {
-                              label: '',
-                              icon: 'pi pi-folder',
-                              route: '/newhireprocess/addunit'
-                          },
-                      {
-                              label: '',
-                              icon: 'pi pi-percentage',
-                              route: '/newhireprocess/addunit'
-                          },
-
-                            {
-                              label: '',
-                              icon: 'pi pi-wallet',
-                              route: '/newhireprocess/addunit'
-                          },
+                              route: '/salesparameter/salesquota'
+                          }
                         ]
                   },
 
