@@ -115,14 +115,14 @@
                     </div>
 
                     <div>
-                      <small>Selling Price Unit VAT</small>
+                      <small>Selling Price with VAT per Unit</small>
                       <InputNumber v-model="localForm.spUnitVat" :minFractionDigits="2" @blur="computeRaw()" type="text" class="w-full" size="small" />
                     </div>
 
                     <div>
-                    <small>Cost Unit VAT <span style="color: red; font-size: 8px; font-style: italic;">Value will be multiplied by 12 (annualized)</span></small>
+                    <small>Cost Unit with VAT per Unit</small>
                         <InputNumber 
-                          v-model="localForm.costRawUnitVat" 
+                          v-model="localForm.costUnitVat" 
                           :minFractionDigits="2"
                           @blur="computeRaw()"
                           type="text" 
@@ -213,14 +213,6 @@
                   </div>
                 </div>
         
-                <div class="flex gap-2">
-                  <div class="w-1/3">
-                    <small>Unit VAT x 12 months</small>
-                  </div>
-                  <div class="flex-1">
-                  <small>: {{ localForm.costUnitVat }}</small>
-                  </div>
-                </div>
 
               <div class="flex gap-2">
                   <div class="w-1/3">
@@ -293,7 +285,7 @@
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useCanvasCost } from '@/stores/CanvasCost/CanvasCostStore';
+import { useCanvasCost } from '@/stores/canvasCost/CanvasCostStore';
 export default {
   props: {
     form: {
@@ -354,7 +346,7 @@ methods: {
           spQtyWoVat: this.localForm.spQtyWoVat,
           poRefDate: this.localForm.poRefDate ? this.localForm.poRefDate.toISOString() : null,
           recommendedSupplier: this.localForm.recommendedSupplier,
-          costUnitVat: this.localForm.costRawUnitVat, //raw unit vat
+          costUnitVat: this.localForm.costUnitVat,
           costQuantityVat: this.localForm.costQuantityVat,
           costUnitWoVat: this.localForm.costUnitWoVat,
           costQuantityWoVat: this.localForm.costQuantityWoVat,
@@ -451,7 +443,7 @@ methods: {
         let _SPQtyWoVat = parseFloat(_SPUnitWoVat) * parseFloat(_Quantity);
         this.localForm.spQtyWoVat = _SPQtyWoVat.toFixed(2);
 
-        let _costUnitVat = ( parseFloat(this.localForm.costRawUnitVat) * 12 ) * 1.12;
+        let _costUnitVat = parseFloat(this.localForm.costUnitVat) * 1.12;
         this.localForm.costUnitVat = _costUnitVat.toFixed(2);
 
         let _costQuantityVat = parseFloat(_Quantity) * _costUnitVat;

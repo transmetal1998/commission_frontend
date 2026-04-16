@@ -1,22 +1,12 @@
 <template>
   <div class="h-screen flex overflow-hidden bg-white relative">
     
-    <transition name="slide-side">
-      <aside 
-        v-if="!isToggled" 
-        class="w-72 h-full side-panel flex flex-col overflow-y-auto fixed `left`-0 top-0 z-20 shadow-xl"
-      >
-        <LeftDrawer />
-      </aside>
-    </transition>
-    <transition name="slide-side">
-      <aside 
-        v-if="isToggled" 
-        class="w-20 h-full side-panel flex flex-col fixed left-0 top-0 z-20 shadow-xl"
-      >
-        <LeftDrawerIcon />
-      </aside>
-    </transition>
+<aside 
+  class="h-full side-panel flex flex-col fixed left-0 top-0 z-20 shadow-xl transition-all duration-300 overflow-hidden"
+  :class="isToggled ? 'w-20' : 'w-72'"
+>
+  <component :is="isToggled ? 'LeftDrawerIcon' : 'LeftDrawer'" />
+</aside>
 
     <div 
       class="flex flex-1 flex-col h-full overflow-hidden transition-all duration-300 ease-in-out" 
@@ -28,7 +18,7 @@
             class="pi pi-bars cursor-pointer hover:text-[#C6011F] transition-colors duration-200" 
             @click="toggleSidebar()"
           ></i> 
-          <span class="ml-4 font-semibold text-lg">Dashboard</span>
+          <!-- <span class="ml-4 font-semibold text-lg">Dashboard</span> -->
         </template>
         <template #end>
           <Header />
@@ -38,9 +28,7 @@
       <main class="flex-1 overflow-y-auto p-8 bg-[#F7F9FC]">
         <div class="w-full min-h-full">
           <router-view v-slot="{ Component }">
-            <transition name="fade-page" mode="out-in">
               <component :is="Component" />
-            </transition>
           </router-view>
         </div>
       </main>
@@ -73,15 +61,15 @@ export default {
 </script>
 
 <style scoped>
-/* 1. Sidebar Slide Animation */
 .slide-side-enter-active,
 .slide-side-leave-active {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
 .slide-side-enter-from,
 .slide-side-leave-to {
-  transform: translateX(-100%);
+  opacity: 0;
+  transform: translateX(-10px);
 }
 
 /* 2. Page Content Fade (Optional but recommended) */

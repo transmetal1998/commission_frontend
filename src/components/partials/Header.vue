@@ -21,32 +21,6 @@ export default {
     data() {
         return {
             items: [
-                // {
-                //     label: 'Profile',
-                //     items: [
-                //         {
-                //             label: 'New',
-                //             icon: 'pi pi-plus',
-                //         },
-                //         {
-                //             label: 'Open',
-                //             icon: 'pi pi-folder-open'
-                //         }
-                //     ]
-                // },
-                // {
-                //     label: 'Change Password',
-                //     items: [
-                //         {
-                //             label: 'Copy',
-                //             icon: 'pi pi-copy'
-                //         },
-                //         {
-                //             label: 'Delete',
-                //             icon: 'pi pi-times'
-                //         }
-                //     ]
-                // },
                 {
                     label: 'Logout',
                     icon: 'pi pi-sign-out',

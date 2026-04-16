@@ -28,12 +28,6 @@ const generateRoutes = (moduleStore) => {
       component: () => import('../layouts/ResetPassword.vue'),
       meta: { isGuest: true },
     },
-    {
-      path: '/:pathMatch(.*)*',
-      component: () => import('../pages/general/NotFoundPage.vue'),
-      meta: { isGuest: true },
-    },
-
     // main layout routes
     {
       path: '/dashboard',
@@ -73,6 +67,11 @@ const generateRoutes = (moduleStore) => {
           
     
       ],
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      component: () => import('../pages/general/NotFoundPage.vue'),
+      meta: { isGuest: true },
     },
   ];
 

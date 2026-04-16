@@ -119,107 +119,144 @@
 
       <ButtonGroup>
           <Button size="small" severity="secondary" @click="showDrawerDetail" label="Add Product" icon="pi pi-plus" />
-          <Button size="small" severity="secondary" @click="showAddons()" label="Add-ons" icon="pi pi-credit-card" />
+          <Button size="small" severity="secondary" @click="showAddons()" label="Charges" icon="pi pi-credit-card" />
           <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Remove" icon="pi pi-trash" />
         </ButtonGroup>
 
     </div>
 
+<Dialog 
+  v-model:visible="visibleRight" 
+  modal 
+  header="Charges" 
+  :style="{ width: '40rem' }"
+>
 
-      <Dialog v-model:visible="visibleRight" maximizable modal header="Add-ons" :style="{ width: '78rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-            <div class="flex gap-2">
-              <div class="w-1/6 p-2">
-                <p class="text-sm text-gray-500 mb-2">All fields are required</p>
-                
-                <div class="flex flex-col">
+  <!-- FORM SECTION -->
+  <div class="p-3">
+    <p class="text-sm text-gray-500 mb-3">All fields are required</p>
 
-                <div>
-                    <small class="text-gray-500">Category</small>
-                    <Select v-model="addonsForm.selectedCategory" size="small" :options="addonsListByCategoryData" @change="onCategoryChange" placeholder="Select a Category" class="w-full" />
-                </div>
+    <!-- Responsive Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
-                <div>
-                    <small class="text-gray-500">Type</small>
-                     <Select 
-                        v-model="addonsForm.selectedType"
-                        size="small"
-                        :options="types"
-                        placeholder="Select a Type"
-                        class="w-full"
-                      />
-                </div>
+      <div>
+        <small class="text-gray-500">Type</small>
+        <Select 
+          v-model="addonsForm.selectedType"
+          size="small"
+          :options="types"
+          placeholder="Select"
+          class="w-full"
+        />
+      </div>
 
-                <div>
-                    <small class="text-gray-500">Quantity</small>
-                    <InputNumber id="username" size="small" :minFractionDigits="2" class="w-full" v-model="addonsForm.quantity" variant="filled" />
-                </div>
+      <div>
+        <small class="text-gray-500">Quantity</small>
+        <InputNumber 
+          size="small" 
+          :minFractionDigits="2" 
+          class="w-full" 
+          v-model="addonsForm.quantity" 
+          variant="filled" 
+        />
+      </div>
 
-                <div>
-                    <small class="text-gray-500">Selling Price Unit (VAT)</small>
-                    <InputNumber id="username" size="small" :minFractionDigits="2" class="w-full" v-model="addonsForm.spUnitVat" variant="filled" />
-                </div>
+      <div class="sm:col-span-2">
+        <small class="text-gray-500">Cost Unit (VAT)</small>
+        <InputNumber 
+          size="small" 
+          :minFractionDigits="2" 
+          class="w-full" 
+          v-model="addonsForm.costUnitVat" 
+          variant="filled" 
+        />
+      </div>
 
-                <div>
-                    <small class="text-gray-500">Cost Unit (VAT)</small>
-                    <InputNumber id="username" size="small" :minFractionDigits="2" class="w-full" v-model="addonsForm.costUnitVat" variant="filled" />
-                </div>
+    </div>
 
-                <div class="mt-3">
-                  <Button severity="primary" @click="saveToAddons()" label="Add" class="w-full"  size="small" />
-                </div>
+    <!-- Action Button -->
+    <div class="mt-4">
+      <Button 
+        severity="primary" 
+        @click="saveToAddons()" 
+        label="Add" 
+        class="w-full"  
+        size="small" 
+      />
+    </div>
+  </div>
 
-                </div>
+  <!-- TABLE SECTION -->
+  <div class="px-3 pb-3">
+    <div class="overflow-x-auto">
 
-              </div>
-              <div class="flex-1 min-w-2">
-                <div class="overflow-x-auto">
-                <DataTable 
-                  showGridlines 
-                  v-model:filters="addonsChargesFilters"
-                  :value="addonsChargesList" 
-                  paginator 
-                  :rows="5" 
-                  :rowsPerPageOptions="[5, 10, 25, 50, 100]" 
-                  size="small"
-                  dataKey="id"
-                  filterDisplay="row"
-                  :globalFilterFields="['category', 'type']"
-                  responsiveLayout="scroll"
-                >
-                  <template #header>
-                      <div class="flex justify-start gap-2">
-                          <IconField>
-                              <InputIcon>
-                                  <i class="pi pi-search" />
-                              </InputIcon>
-                              <InputText size="small" v-model="addonsChargesFilters['global'].value" placeholder="Search" />
-                          </IconField>
-                      </div>
-                  </template>
-                  <template #empty>
-                      <div class="py-4 text-center text-gray-500 italic">
-                          No Add-ons Found.
-                      </div>
-                  </template>
-                  <Column field="category" header="Category" style="min-width: 120px" sortable></Column> 
-                  <Column field="type" header="Type" style="min-width: 120px" sortable></Column>
-                  <Column field="quantity" header="Quantity" style="min-width: 120px" sortable></Column>
-                  <Column field="spUnitVat" header="SP Unit (VAT)" style="min-width: 120px" sortable></Column>
-                  <Column field="spQtyVat" header="SP Qty (VAT)" style="min-width: 120px" sortable></Column>
-                  <Column field="spUnitWoVat" header="SP Unit (w/o VAT)" style="min-width: 120px" sortable></Column>
-                  <Column field="spQtyWoVat" header="SP Qty (w/o VAT)" style="min-width: 120px" sortable></Column>
-                  <Column field="costUnitVat" header="Cost Unit (VAT)" style="min-width: 120px"  sortable></Column>
-                  <Column field="costQuantityVat" header="Cost Qty (VAT)" style="min-width: 120px"  sortable></Column>
-                  <Column field="costUnitWoVat" header="Cost Unit (w/o VAT)" style="min-width: 120px"  sortable></Column>
-                  <Column field="costQuantityWoVat" header="Cost Qty (w/o VAT)" style="min-width: 120px"  sortable></Column>
-                  <Column field="profitMarginWoVat" header="Profit Margin (w/o VAT)" style="min-width: 120px"  sortable></Column>
-                  <Column field="profitMargin" header="Profit Margin" style="min-width: 120px"  sortable></Column>
-                </DataTable>
-                </div>
-              </div>
-              
-            </div>
-      </Dialog>
+      <DataTable 
+  showGridlines 
+  v-model:filters="addonsChargesFilters"
+  :value="addonsChargesList" 
+  paginator 
+  :rows="5" 
+  :rowsPerPageOptions="[5,10,25]"
+  size="small"
+  dataKey="id"
+  filterDisplay="row"
+  :globalFilterFields="['category', 'type']"
+  responsiveLayout="scroll"
+>
+
+  <!-- Header -->
+  <template #header>
+    <div class="flex justify-between items-center">
+      <span class="text-sm font-medium">Charges List</span>
+
+      <IconField>
+        <InputIcon>
+          <i class="pi pi-search" />
+        </InputIcon>
+        <InputText 
+          size="small" 
+          v-model="addonsChargesFilters['global'].value" 
+          placeholder="Search" 
+        />
+      </IconField>
+    </div>
+  </template>
+
+  <!-- Empty -->
+  <template #empty>
+    <div class="py-4 text-center text-gray-500 italic">
+      No Add-ons Found.
+    </div>
+  </template>
+
+  <!-- Columns -->
+  <Column field="type" header="Type" sortable />
+  <Column field="quantity" header="Qty" sortable />
+  <Column field="costUnitVat" header="Unit (VAT)" sortable />
+  <Column field="costQuantityVat" header="Qty (VAT)" sortable />
+  <Column field="costUnitWoVat" header="Unit (w/o VAT)" sortable />
+  <Column field="costQuantityWoVat" header="Qty (w/o VAT)" sortable />
+
+  <!-- DELETE COLUMN -->
+  <Column header="" style="width: 3rem; text-align: center">
+    <template #body="slotProps">
+      <Button 
+        icon="pi pi-trash"
+        severity="danger"
+        text
+        rounded
+        size="small"
+        @click="deleteAddonRow(slotProps.data)"
+      />
+    </template>
+  </Column>
+
+</DataTable>
+
+    </div>
+  </div>
+
+</Dialog>
 
 
 
@@ -285,7 +322,7 @@
           </div>
 
           <div class="flex flex-col gap-2">
-            <label class="text-sm font-bold text-gray-600">Business Unit</label>
+            <label class="text-sm font-bold text-gray-600">Transaction</label>
             <div class="flex gap-4 items-center h-10">
               <div class="flex items-center">
                 <RadioButton v-model="form.businesUnit" inputId="buFDC" value="FDC" />
@@ -294,6 +331,10 @@
               <div class="flex items-center">
                 <RadioButton v-model="form.businesUnit" inputId="buMSU" value="MSU" />
                 <label for="buMSU" class="ml-2 text-sm text-gray-700">MSU</label>
+              </div>
+              <div class="flex items-center">
+                <RadioButton v-model="form.businesUnit" inputId="buCFI" value="CFI" />
+                <label for="buCFI" class="ml-2 text-sm text-gray-700">CFI</label>
               </div>
             </div>
           </div>
@@ -353,7 +394,7 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useCanvasCost } from '@/stores/CanvasCost/CanvasCostStore';
+import { useCanvasCost } from '@/stores/canvasCost/CanvasCostStore';
 import ComputationModal from '@/components/canvassCost/computationModal.vue';
 import moment from "moment";
 
@@ -508,11 +549,14 @@ export default {
           this.addonsChargesList = this.canvasCostAddonsCharges;
         });
 
+        await this.fetchAddonsListByType('Charges');
+        this.types = this.addonsListByType;
+
         this.visibleRight = true;
       }, 
       async saveToAddons() {
 
-          if(!this.addonsForm.selectedCategory || !this.addonsForm.selectedType || !this.addonsForm.quantity) {
+          if(!this.addonsForm.selectedType || !this.addonsForm.quantity) {
             this.$toast.add({
               severity: 'warn',
               summary: 'Warning',
@@ -561,19 +605,19 @@ export default {
             };
 
       },
-      async onCategoryChange() {
+      // async onCategoryChange() {
       
-          this.selectedType = null; // reset type
-          if (!this.addonsForm.selectedCategory) {
-            this.types = [];
-            return;
-          }
+      //     this.selectedType = null; // reset type
+      //     if (!this.addonsForm.selectedCategory) {
+      //       this.types = [];
+      //       return;
+      //     }
 
-          await this.fetchAddonsListByType(this.addonsForm.selectedCategory);
-          this.types = this.addonsListByType;
+      //     await this.fetchAddonsListByType('Charges');
+      //     this.types = this.addonsListByType;
 
         
-      },
+      // },
 
     async showDrawerDetail() {
       this.visibleComputation = true;
@@ -588,6 +632,13 @@ export default {
 
       await this.fetchProductList();
       this.productCodeListRaw = this.productCodeList.data;
+
+    },
+    deleteAddonRow(data) {
+
+      // var addonId[] = data.id;
+
+      console.log(data.id);
 
     },
     async confirmDelete() {
