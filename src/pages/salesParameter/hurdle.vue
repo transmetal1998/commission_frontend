@@ -2,7 +2,6 @@
     <div>
         <div class="mb-4">
             <h1 class="text-2xl text-gray-400">Hurdle Rate</h1>
-            <!-- <p class="text-gray-600">Manage hurdle rates for sales associates.</p> -->
         </div>
     </div>
    <div class="flex flex-row gap-4">

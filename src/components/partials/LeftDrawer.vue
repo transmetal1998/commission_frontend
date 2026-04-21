@@ -71,21 +71,9 @@
                   },
 
                   {
-                      label: 'Canvas Cost Sheet',
+                      label: 'Canvass Cost',
                       icon: 'pi pi-server',
                       route: '/canvasCost'
-                  },
-                  {
-                      label: 'Sales Core',
-                      icon: 'pi pi-table',
-                      items: [
-                          {
-                              label: 'Service',
-                              icon: 'pi pi-chart-bar',
-                              route: '/salescore/service'
-                          },
-                          
-                      ]
                   },
                   {
                       label: 'Sales Parameter',
@@ -108,8 +96,11 @@
                           }
                         ]
                   },
-
-
+                  {
+                      label: 'Sales Commission',
+                      icon: 'pi pi-dollar',
+                      route: '/salescore'
+                  },
                   {
                       label: 'Reports',
                       icon: 'pi pi-desktop',

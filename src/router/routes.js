@@ -45,8 +45,8 @@ const generateRoutes = (moduleStore) => {
           // meta: { requiresAuth: true },
         },
         {
-          path: '/salescore/service',
-          component: () => import('../pages/salesCore/service.vue'),
+          path: '/salescore',
+          component: () => import('../pages/salesCommission/salesCommissionPage.vue'),
           // meta: { requiresAuth: true },
         },
         {

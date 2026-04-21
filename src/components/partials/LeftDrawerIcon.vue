@@ -76,19 +76,7 @@
                       icon: 'pi pi-server',
                       route: '/canvasCost'
                   },
-                  {
-                      label: '',
-                      icon: 'pi pi-table',
-                      items: [
-                          {
-                              label: '',
-                              icon: 'pi pi-chart-bar',
-                              route: '/salescore/service'
-                          },
-                          
-                      ]
-                  },
-                  {
+                   {
                       label: '',
                       icon: 'pi pi-user',
                       items: [
@@ -109,8 +97,11 @@
                           }
                         ]
                   },
-
-
+                  {
+                      label: '',
+                      icon: 'pi pi-dollar',
+                      route: '/salescore'                          
+                  },
                   {
                       label: '',
                       icon: 'pi pi-desktop',

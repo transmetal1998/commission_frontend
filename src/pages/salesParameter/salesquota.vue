@@ -75,19 +75,17 @@
                 </template>
             </Card>
 
-            <Dialog v-model:visible="visible" modal :header="isForUpdate ? 'Edit Hurdle Rate' : 'Add Sales Quota'" size="small">
+            <Dialog v-model:visible="visible" modal :header="isForUpdate ? 'Edit Hurdle Rate' : 'Add Sales Quota'" size="small"  :style="{ width: '25rem' }">
             
             <div class="flex  gap-4 mb-4">
                 <div class="flex flex-col gap-2 w-full">
                         <div class="">
                             <small>Business Unit</small>
-                            <!-- <Select v-model="selectedAssociate" size="small" :options="localAssociateSalesList" filter optionLabel="fullName" placeholder="Select a Sales" class="w-full mt-2">
+                            <Select v-model="selectedBusinessUnit" size="small" :options="localBusinessUnitList" filter optionLabel="description" placeholder="Select a Business Unit" class="w-full mt-2">
                                 <template #value="slotProps">
                                     <div v-if="slotProps.value" class="flex items-center">
                                         <div>
-                                            {{ slotProps.value.fullName }}
-                                            <br>
-                                            <small class="text-gray-500"> {{ slotProps.value.department }} </small>
+                                            {{ slotProps.value.description }}
                                         </div>
                                     </div>
                                     <span v-else>
@@ -97,14 +95,11 @@
                                 <template #option="slotProps">
                                     <div class="flex items-center">
                                         <div>
-                                            {{ slotProps.option.fullName }}
-                                            <br>
-                                            <small class="text-gray-500"> {{ slotProps.option.department }} </small>
+                                            {{ slotProps.option.description }}
                                         </div>
                                     </div>
                                 </template>
-                            </Select> -->
-                            <InputText v-model="selectedBusinessUnit" type="text" class="w-full" size="small" />
+                            </Select>
                         </div>
                         <div>
                             <small>Quota</small>
@@ -137,22 +132,26 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { useSalesQuota } from '@/stores/salesParameter/SalesQuotaStore';
-import { useAssociateSales } from '@/stores/systemSettings/AssociateSalesStore';
+import { useBusinessUnit } from '@/stores/systemSettings/BusinessUnitStore';
 import moment from "moment";
 
 export default {
   data() {
+    const currentYear = new Date().getFullYear();
     return {
       
         localSalesQuotaList: [],
-        localAssociateSalesList: [],
-        // selectedAssociate: null,
-        selectedBusinessUnit: '',
+        localBusinessUnitList: [],
+        selectedBusinessUnit: null,
         selectedQuota: null,
         selectedTarget: '',
         selectedTargetAmount: null,
-        selectedTargetYear: null,
-        yearOptions: [],
+        selectedTargetYear: currentYear,
+        yearOptions: [
+            { label: currentYear.toString(), value: currentYear },
+            { label: (currentYear - 1).toString(), value: currentYear - 1 },
+            { label: (currentYear - 2).toString(), value: currentYear - 2 }
+        ],
 
         salesQuotaFilters: {
           global: { value: null, matchMode: 'contains' },
@@ -170,21 +169,18 @@ export default {
     ...mapState(useSalesQuota, {
             salesQuotaList: 'salesQuotaList'
         }),
-    ...mapState(useAssociateSales, {
-            associateSalesList: 'associateSalesList'
+    ...mapState(useBusinessUnit, {
+            businessUnitList: 'businessUnitList'
         }),
   },
   async mounted() {
   
     await this.fetchSalesQuota();
     this.localSalesQuotaList = this.salesQuotaList;
-      
-    const currentYear = new Date().getFullYear()
-    this.yearOptions = Array.from({ length: 3 }, (_, i) => {
-      const year = currentYear - i
-      return { label: year.toString(), value: year }
-    })
 
+    await this.fetchBusinessUnitList();
+    this.localBusinessUnitList = this.businessUnitList;
+      
   },
   methods: {
     ...mapActions(useSalesQuota, {
@@ -192,13 +188,12 @@ export default {
             postSalesQuota: 'postSalesQuota',
             updateSalesQuota: 'updateSalesQuota'
         }),
-    ...mapActions(useAssociateSales, {
-            fetchAssociateSalesList: 'fetchAssociateSalesList',
-            
+    ...mapActions(useBusinessUnit, {
+            fetchBusinessUnitList: 'fetchBusinessUnitList'
         }),
     async proceedToSave() {
 
-        if(this.selectedBusinessUnit.trim() === '' || this.selectedQuota === null || this.selectedTargetYear === null) {
+        if(this.selectedBusinessUnit === null || this.selectedQuota === null || this.selectedTargetYear === null) {
             this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields', life: 3000 });
             return;
         }
@@ -206,7 +201,7 @@ export default {
         if(this.isForUpdate) {
             
             await this.updateSalesQuota({
-                businessUnit : this.selectedBusinessUnit,
+                businessUnit : this.selectedBusinessUnit.Description,
                 quota: this.selectedQuota,
                 targetYear: this.selectedTargetYear
             }, this.selectedId);
@@ -214,7 +209,7 @@ export default {
         } else {
         
             await this.postSalesQuota({
-                businessUnit : this.selectedBusinessUnit,
+                businessUnit : this.selectedBusinessUnit.Description,
                 quota: this.selectedQuota,
                 targetYear: this.selectedTargetYear
             });
@@ -242,7 +237,7 @@ export default {
         this.selectedTarget = '';
         this.selectedTargetAmount = null;
         this.selectedHurdlePercent = null;
-        this.selectedTargetYear = null;
+        this.selectedTargetYear = getCurrentYear();
     },
     editAddonRow(rowData) {
         // Implement edit functionality here
