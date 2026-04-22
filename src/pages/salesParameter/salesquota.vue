@@ -10,7 +10,8 @@
             <Card>
                 <template #content>   
                         <DataTable 
-                            showGridlines 
+                            showGridlines
+                            stripedRows 
                             v-model:filters="salesQuotaFilters"
                             :value="localSalesQuotaList" 
                             paginator 
@@ -35,6 +36,7 @@
                                     @click="showSalesQuoteModal()"  
                                 />
 
+
                                 <IconField>
                                     <InputIcon>
                                     <i class="pi pi-search" />
@@ -55,33 +57,31 @@
                                 </div>
                             </template>
 
-                            <Column field="businessUnit" header="Business Unit" sortable></Column>
-                            <Column field="quota" header="Quota"></Column>
-                            <Column field="targetYear" header="Year" sortable></Column>
+                            <Column field="businessUnit" header="Business Unit" bodyClass="text-sm" sortable></Column>
+                            <Column field="quota" header="Quota" bodyClass="text-sm">
+                                <template #body="slotProps">
+                                    {{ formatNumber(slotProps.data.quota) }}
+                                </template>
+                            </Column>
+                            <Column field="targetYear" header="Year" sortable bodyClass="text-sm"></Column>
 
                             <!-- DELETE COLUMN -->
                             <Column header="" style="width: 3rem; text-align: center">
                                 <template #body="slotProps">
-                                <Button 
-                                    icon="pi pi-pencil"
-                                    severity="info"
-                                    
-                                    size="small"
-                                    @click="editAddonRow(slotProps.data)"
-                                />
+                                <i class="pi pi-pencil text-gray-500" @click="editAddonRow(slotProps.data)" style="cursor: pointer"></i>
                                 </template>
                             </Column>
                             </DataTable>
                 </template>
             </Card>
 
-            <Dialog v-model:visible="visible" modal :header="isForUpdate ? 'Edit Hurdle Rate' : 'Add Sales Quota'" size="small"  :style="{ width: '25rem' }">
+            <Dialog v-model:visible="visible" modal :header="isForUpdate ? 'Edit Sales Quota' : 'Add Sales Quota'" size="small"  :style="{ width: '25rem' }">
             
             <div class="flex  gap-4 mb-4">
                 <div class="flex flex-col gap-2 w-full">
                         <div class="">
                             <small>Business Unit</small>
-                            <Select v-model="selectedBusinessUnit" size="small" :options="localBusinessUnitList" filter optionLabel="description" placeholder="Select a Business Unit" class="w-full mt-2">
+                            <Select v-model="selectedBusinessUnit" size="small" :options="localBusinessUnitList" filter optionLabel="Description" placeholder="Select a Business Unit" class="w-full mt-2">
                                 <template #value="slotProps">
                                     <div v-if="slotProps.value" class="flex items-center">
                                         <div>
@@ -201,15 +201,16 @@ export default {
         if(this.isForUpdate) {
             
             await this.updateSalesQuota({
-                businessUnit : this.selectedBusinessUnit.Description,
+                businessUnit : this.selectedBusinessUnit.description,
                 quota: this.selectedQuota,
                 targetYear: this.selectedTargetYear
             }, this.selectedId);
 
         } else {
-        
+
+            
             await this.postSalesQuota({
-                businessUnit : this.selectedBusinessUnit.Description,
+                businessUnit : this.selectedBusinessUnit.description,
                 quota: this.selectedQuota,
                 targetYear: this.selectedTargetYear
             });
@@ -233,18 +234,16 @@ export default {
     showSalesQuoteModal() {
         this.visible = true;
         this.isForUpdate = false;
-        this.selectedAssociate = null;
-        this.selectedTarget = '';
-        this.selectedTargetAmount = null;
-        this.selectedHurdlePercent = null;
-        this.selectedTargetYear = getCurrentYear();
+        this.selectedBusinessUnit = null;
+        this.selectedQuota = null;
+        this.selectedTargetYear = null;
+        
     },
     editAddonRow(rowData) {
         // Implement edit functionality here
       
         this.visible = true;
-        // this.selectedAssociate = this.localAssociateSalesList.find(associate => associate.username === rowData.username) || null;
-        this.selectedBusinessUnit = rowData.businessUnit;
+        this.selectedBusinessUnit = this.localBusinessUnitList.find(unit => unit.description === rowData.businessUnit) || null;
         this.selectedQuota = rowData.quota;
         this.selectedTargetYear = rowData.targetYear;
         this.selectedId = rowData.id;
@@ -252,6 +251,14 @@ export default {
         this.isForUpdate = true;
         
 
+    },
+    formatNumber(value) {
+        if (value === null || value === undefined) return '';
+
+        return Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+        });
     }
   }
 }

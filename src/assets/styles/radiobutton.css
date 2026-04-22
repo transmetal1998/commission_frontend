@@ -1,0 +1,7 @@
+.p-radiobutton {
+    --p-radiobutton-checked-background: #c52b42;
+    --p-radiobutton-checked-hover-background: #c52b42;
+    /* --p-radiobutton-border-color: #c52b42; */
+    --p-radiobutton-checked-border-color: #c52b42;
+    --p-radiobutton-focus-border-color: #c52b42;
+}

@@ -104,13 +104,16 @@
     <div class="flex-1 min-w-0 bg-white rounded shadow p-4 flex flex-col h-[430px]" >
   <div v-if="isActive" class="flex flex-col h-full">
     
-    <div class="grid grid-cols-3 gap-4 mb-4">
+    <div class="grid grid-cols-4 gap-4 mb-4">
       <div><small class="text-xs text-gray-500">Customer Reference No:<br><span class="text-black font-medium">{{ canvassCostHeaderDetails.customerRefNo }}</span></small></div>
       <div><small class="text-xs text-gray-500">Customer Name: <br> <span class="text-black font-medium">{{ canvassCostHeaderDetails.customerName }}</span></small></div>
       <div><small class="text-xs text-gray-500">BU: <br> <span class="text-black font-medium">{{ canvassCostHeaderDetails.businesUnit }}</span></small> </div>
       <div><small class="text-xs text-gray-500">SO Number: <br> <span class="text-black font-medium">{{ canvassCostHeaderDetails.salesOrderNo }}</span></small></div>
       <div><small class="text-xs text-gray-500">SO Date: <br> <span class="text-black font-medium">{{ formatDate(canvassCostHeaderDetails.salesOrderDate) }}</span></small></div>
       <div><small class="text-xs text-gray-500">PDEX Rate: <br> <span class="text-black font-medium">{{ canvassCostHeaderDetails.pdexRate }}</span></small></div>
+      <div><small class="text-xs text-gray-500">Corporate: <br> <span class="text-black font-medium">{{ canvassCostHeaderDetails.corporate }}</span></small></div>
+      <div><small class="text-xs text-gray-500">Period: <br> <span class="text-black font-medium">{{ canvassCostHeaderDetails.yearCategory }}</span></small></div>
+    
     </div>
 
     <div class="bg-gray-200 h-[8px] mb-4 -mx-4"></div>
@@ -121,147 +124,150 @@
           <Button size="small" severity="secondary" @click="showDrawerDetail" label="Add Product" icon="pi pi-plus" />
           <Button size="small" severity="secondary" @click="showAddons()" label="Charges" icon="pi pi-credit-card" />
           <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Remove" icon="pi pi-trash" />
+          <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Post" icon="pi pi-send" />
         </ButtonGroup>
 
     </div>
 
-<Dialog 
-  v-model:visible="visibleRight" 
-  modal 
-  header="Charges" 
-  :style="{ width: '40rem' }"
->
+    <Dialog 
+      v-model:visible="visibleRight" 
+      modal 
+      header="Charges" 
+      :style="{ width: '60rem' }"
+    >
 
-  <!-- FORM SECTION -->
-  <div class="p-3">
-    <p class="text-sm text-gray-500 mb-3">All fields are required</p>
+      <!-- FORM SECTION -->
+      <div class="p-3">
+        <p class="text-sm text-gray-500 mb-3">All fields are required</p>
 
-    <!-- Responsive Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
-      <div>
-        <small class="text-gray-500">Type</small>
-        <Select 
-          v-model="addonsForm.selectedType"
-          size="small"
-          :options="types"
-          placeholder="Select"
-          class="w-full"
-        />
+          <div>
+            <small class="text-gray-500">Type</small>
+            <Select 
+              v-model="addonsForm.selectedType"
+              size="small"
+              :options="types"
+              placeholder="Select"
+              class="w-full"
+            />
+          </div>
+
+          <div>
+            <small class="text-gray-500">Quantity</small>
+            <InputNumber 
+              size="small" 
+              :minFractionDigits="2" 
+              class="w-full" 
+              v-model="addonsForm.quantity" 
+              variant="filled" 
+            />
+          </div>
+
+          <div>
+            <small class="text-gray-500">Cost Unit (VAT)</small>
+            <InputNumber 
+              size="small" 
+              :minFractionDigits="2" 
+              class="w-full" 
+              v-model="addonsForm.costUnitVat" 
+              variant="filled" 
+            />
+          </div>
+
+          <div>
+            <!-- <small class="text-gray-500">Save this Charges?</small> -->
+            <Button 
+            severity="primary" 
+            @click="saveToAddons()" 
+            label="Save Charges" 
+            class="w-full mt-6"  
+            size="small" 
+          />
+          </div>
+
+        </div>
+
       </div>
 
-      <div>
-        <small class="text-gray-500">Quantity</small>
-        <InputNumber 
-          size="small" 
-          :minFractionDigits="2" 
-          class="w-full" 
-          v-model="addonsForm.quantity" 
-          variant="filled" 
-        />
+      <!-- TABLE SECTION -->
+      <div class="px-3 pb-3">
+        <div class="overflow-x-auto">
+
+          <DataTable 
+      showGridlines 
+      stripedRows
+      v-model:filters="addonsChargesFilters"
+      :value="addonsChargesList" 
+      paginator 
+      :rows="5" 
+      :rowsPerPageOptions="[5,10,25]"
+      size="small"
+      dataKey="id"
+      filterDisplay="row"
+      :globalFilterFields="['category', 'type']"
+      responsiveLayout="scroll"
+    >
+
+      <!-- Header -->
+      <template #header>
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-medium">Charges List</span>
+
+          <IconField>
+            <InputIcon>
+              <i class="pi pi-search" />
+            </InputIcon>
+            <InputText 
+              size="small" 
+              v-model="addonsChargesFilters['global'].value" 
+              placeholder="Search" 
+            />
+          </IconField>
+        </div>
+      </template>
+
+      <!-- Empty -->
+      <template #empty>
+        <div class="py-4 text-center text-gray-500 italic">
+          No Charges Found.
+        </div>
+      </template>
+
+      <!-- Columns -->
+      <Column field="type" header="Type" sortable />
+      <Column field="quantity" header="Qty" sortable />
+      <Column field="costUnitVat" header="Unit (VAT)" sortable />
+      <Column field="costQuantityVat" header="Qty (VAT)" sortable />
+      <Column field="costUnitWoVat" header="Unit (w/o VAT)" sortable />
+      <Column field="costQuantityWoVat" header="Qty (w/o VAT)" sortable />
+
+      <!-- DELETE COLUMN -->
+      <Column header="" style="width: 3rem; text-align: center">
+        <template #body="slotProps">
+          <Button 
+            icon="pi pi-trash"
+            severity="danger"
+            text
+            rounded
+            size="small"
+            @click="deleteAddonRow(slotProps.data)"
+          />
+        </template>
+      </Column>
+
+          </DataTable>
+
+        </div>
       </div>
 
-      <div class="sm:col-span-2">
-        <small class="text-gray-500">Cost Unit (VAT)</small>
-        <InputNumber 
-          size="small" 
-          :minFractionDigits="2" 
-          class="w-full" 
-          v-model="addonsForm.costUnitVat" 
-          variant="filled" 
-        />
-      </div>
-
-    </div>
-
-    <!-- Action Button -->
-    <div class="mt-4">
-      <Button 
-        severity="primary" 
-        @click="saveToAddons()" 
-        label="Add" 
-        class="w-full"  
-        size="small" 
-      />
-    </div>
-  </div>
-
-  <!-- TABLE SECTION -->
-  <div class="px-3 pb-3">
-    <div class="overflow-x-auto">
-
-      <DataTable 
-  showGridlines 
-  v-model:filters="addonsChargesFilters"
-  :value="addonsChargesList" 
-  paginator 
-  :rows="5" 
-  :rowsPerPageOptions="[5,10,25]"
-  size="small"
-  dataKey="id"
-  filterDisplay="row"
-  :globalFilterFields="['category', 'type']"
-  responsiveLayout="scroll"
->
-
-  <!-- Header -->
-  <template #header>
-    <div class="flex justify-between items-center">
-      <span class="text-sm font-medium">Charges List</span>
-
-      <IconField>
-        <InputIcon>
-          <i class="pi pi-search" />
-        </InputIcon>
-        <InputText 
-          size="small" 
-          v-model="addonsChargesFilters['global'].value" 
-          placeholder="Search" 
-        />
-      </IconField>
-    </div>
-  </template>
-
-  <!-- Empty -->
-  <template #empty>
-    <div class="py-4 text-center text-gray-500 italic">
-      No Add-ons Found.
-    </div>
-  </template>
-
-  <!-- Columns -->
-  <Column field="type" header="Type" sortable />
-  <Column field="quantity" header="Qty" sortable />
-  <Column field="costUnitVat" header="Unit (VAT)" sortable />
-  <Column field="costQuantityVat" header="Qty (VAT)" sortable />
-  <Column field="costUnitWoVat" header="Unit (w/o VAT)" sortable />
-  <Column field="costQuantityWoVat" header="Qty (w/o VAT)" sortable />
-
-  <!-- DELETE COLUMN -->
-  <Column header="" style="width: 3rem; text-align: center">
-    <template #body="slotProps">
-      <Button 
-        icon="pi pi-trash"
-        severity="danger"
-        text
-        rounded
-        size="small"
-        @click="deleteAddonRow(slotProps.data)"
-      />
-    </template>
-  </Column>
-
-</DataTable>
-
-    </div>
-  </div>
-
-</Dialog>
+    </Dialog>
 
 
 
     <div class="flex-1 min-h-0">
       <DataTable
+      stripedRows
         v-model:selection="selectedDetails"
         :value="canvassDetailList"
         dataKey="id"

@@ -54,29 +54,54 @@
                                 </div>
                             </template>
 
-                            <Column field="fullName" header="Associate" sortable></Column>
-                            <Column field="hurdleBasis" header="Hurdle Basis"></Column>
-                            <Column field="targetAmount" header="Target"></Column>
-                            <Column field="hurdlePercent" header="Hurdle (%)"></Column>
-                            <Column field="targetYear" header="Year" sortable></Column>
+                            <Column header="Associate" bodyClass="text-sm">
+                                <template #body="slotProps">
+                                    <div >
+                                        {{ slotProps.data.fullName }}
+                                    </div>
+                                </template>
+                            </Column>
+                            <Column header="Hurdle Basis" bodyClass="text-sm">
+                                <template #body="slotProps">
+                                    <div >
+                                        {{ slotProps.data.hurdleBasis }}
+                                    </div>
+                                </template>
+                            </Column>
+                            <Column header="Target" bodyClass="text-sm">
+                                <template #body="slotProps">
+                                    <div >
+                                        {{ formatNumber(slotProps.data.targetAmount) }}
+                                    </div>
+                                </template>
+                            </Column>
+                            <Column header="Hurdle (%)" bodyClass="text-sm">
+                                <template #body="slotProps">
+                                    <div >
+                                        {{ slotProps.data.hurdlePercent }}
+                                    </div>
+                                </template>
+                            </Column>
+                            <Column header="Year" bodyClass="text-sm">
+                                <template #body="slotProps">
+                                    <div >
+                                        {{ slotProps.data.targetYear }}
+                                    </div>
+                                </template>
+                            </Column>
 
                             <!-- DELETE COLUMN -->
                             <Column header="" style="width: 3rem; text-align: center">
                                 <template #body="slotProps">
-                                <Button 
-                                    icon="pi pi-pencil"
-                                    severity="info"
-                                    
-                                    size="small"
-                                    @click="editAddonRow(slotProps.data)"
-                                />
+                                <i class="pi pi-pencil text-gray-500" @click="editAddonRow(slotProps.data)" style="cursor: pointer"></i>
+
                                 </template>
                             </Column>
                             </DataTable>
                 </template>
             </Card>
 
-            <Dialog v-model:visible="visible" modal :header="isForUpdate ? 'Edit Hurdle Rate' : 'Add Hurdle Rate'" size="small">
+            <Dialog v-model:visible="visible" modal :header="isForUpdate ? 'Edit Hurdle Rate' : 'Add Hurdle Rate'" size="small" :style="{ width: '25rem' }">
             
             <div class="flex  gap-4 mb-4">
                 <div class="flex flex-col gap-2 w-full">
@@ -280,6 +305,14 @@ export default {
         this.isForUpdate = true;
         
 
+    },
+    formatNumber(value) {
+        if (value === null || value === undefined) return '';
+
+        return Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+        });
     }
   }
 }

@@ -1,0 +1,6 @@
+.p-tablist {
+    --p-tabs-tab-active-color: #c52b42;
+    --p-tabs-tab-active-border-color: #c52b42;
+    --p-tabs-tab-hover-border-color:#c52b42;
+    --p-tabs-active-bar-background: #c52b42;
+}

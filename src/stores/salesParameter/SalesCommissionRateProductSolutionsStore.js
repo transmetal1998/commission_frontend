@@ -1,27 +1,21 @@
 import { defineStore } from 'pinia';
 import { api } from '@/boot/axios';
 
-export const useSalesCommissionRate = defineStore('salesCommissionRate', {
+export const useSalesCommissionRateProductSolutions = defineStore('salesCommissionRateProductSolutions', {
     state: () => ({
-        salesCommissionRateList: [],
-        salesCommissionRateYearList: [],
-          
+        salesCommissionRateProductSolutionsList: [],          
     }),
     getters: {
-        getSalesCommissionRateList(state) {
-            return state.salesCommissionRateList;
-        },
-        getSalesCommissionRateYearList(state) {
-            return state.salesCommissionRateYearList;
-        },
-        
+        getsalesCommissionRateProductSolutionsList(state) {
+            return state.salesCommissionRateProductSolutionsList;
+        },        
     },
     actions: {
-       async fetchSalesCommissionRateList() {
+        async fetchsalesCommissionRateProductSolutionsList() {
             try {
                 
-                const response = await api.get('/SalesCommissionRate');
-                this.salesCommissionRateList = response.data;
+                const response = await api.get('/SalesCommissionRateProductSolutions');
+                this.salesCommissionRateProductSolutionsList = response.data;
                 return true;
 
             } catch (err) {
@@ -32,25 +26,14 @@ export const useSalesCommissionRate = defineStore('salesCommissionRate', {
             }
         },
 
-        async fetchSalesCommissionRateYearList() {
-            try {
-                const response = await api.get('/SalesCommissionRate/year');
-                this.salesCommissionRateYearList = response.data;
-                return true;
-            } catch (err) {
-                console.log('Error fetching sales commission rate year list:', err);
-                return false;
-            }
-        },
-
         async postSalesCommissionRate(data) {
             try {
                 /** For API login and set the auth token */
-                const response = await api.post('/SalesCommissionRate', {
+                const response = await api.post('/SalesCommissionRateProductSolutions', {
                     marginFrom : data.marginFrom,
                     marginTo: data.marginTo,
                     rateCommissionMargin : data.rateCommissionMargin,
-                    typeYear: data.typeYear,
+                    type: data.typeYear,
                     targetYear: data.targetYear,
                 });
 
@@ -83,96 +66,16 @@ export const useSalesCommissionRate = defineStore('salesCommissionRate', {
                 }
             }
         },
-
-        async postSalesCommissionRateYear(data) {
-            try {
-                /** For API login and set the auth token */
-                const response = await api.post('/SalesCommissionRate/year', {
-                    businessUnit: data.businessUnit,
-                    rateCommissionOnBilling: data.rateCommissionOnBilling,
-                    targetYear: data.targetYear,
-                });
-
-                return response.data;
-
-            } catch (err) {
-
-                if (err.response) {
-                    const status = err.response.status; // 400, 401, 500, etc.
-                    const message = err.response.data?.message || 'An error occurred';
-
-                    console.error(`HTTP ${status}: ${message}`);
-                    this.error = message;
-
-                    // You can handle different statuses differently
-                    if (status === 400) {
-                        // Bad Request
-                        console.warn('Bad request: probably invalid input');
-                    } else if (status === 401) {
-                        // Unauthorized
-                        console.warn('Unauthorized: invalid credentials');
-                    }
-
-                    return { status, message };
-                } else {
-                    // Network error or no response
-                    this.error = 'Network error';
-                    console.error(this.error);
-                    return { status: null, message: this.error };
-                }
-            }
-        },
-
 
         async updateSalesCommissionRate(data, id) {
             try {
                 /** For API login and set the auth token */
-                const response = await api.put(`/SalesCommissionRate/${id}`, {
+                const response = await api.put(`/SalesCommissionRateProductSolutions/${id}`, {
                     id: id,
                     marginFrom : data.marginFrom,
                     marginTo: data.marginTo,
                     rateCommissionMargin : data.rateCommissionMargin,
                     typeYear: data.typeYear,
-                    targetYear: data.targetYear,
-                });
-
-                return response.data;
-
-            } catch (err) {
-
-                if (err.response) {
-                    const status = err.response.status; // 400, 401, 500, etc.
-                    const message = err.response.data?.message || 'An error occurred';
-
-                    console.error(`HTTP ${status}: ${message}`);
-                    this.error = message;
-
-                    // You can handle different statuses differently
-                    if (status === 400) {
-                        // Bad Request
-                        console.warn('Bad request: probably invalid input');
-                    } else if (status === 401) {
-                        // Unauthorized
-                        console.warn('Unauthorized: invalid credentials');
-                    }
-
-                    return { status, message };
-                } else {
-                    // Network error or no response
-                    this.error = 'Network error';
-                    console.error(this.error);
-                    return { status: null, message: this.error };
-                }
-            }
-        },
-
-        async updateSalesCommissionRateYear(data, id) {
-            try {
-                /** For API login and set the auth token */
-                const response = await api.put(`/SalesCommissionRate/year/${id}`, {
-                    id: id,
-                    businessUnit: data.businessUnit,
-                    rateCommissionOnBilling: data.rateCommissionOnBilling,
                     targetYear: data.targetYear,
                 });
 
@@ -209,7 +112,7 @@ export const useSalesCommissionRate = defineStore('salesCommissionRate', {
         async deleteSalesCommissionRate(data) {
             try {
                 /** For API login and set the auth token */
-                const response = await api.post('/SalesCommissionRate/bulk-delete', data);
+                const response = await api.post('/SalesCommissionRateProductSolutions/bulk-delete', data);
                 return response.data;
 
             } catch (err) {

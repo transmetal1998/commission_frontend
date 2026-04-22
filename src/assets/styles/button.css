@@ -8,6 +8,9 @@
     --p-button-primary-active-border-color:#DA1856; 
     --p-button-primary-border-color: #DA1856;
     --p-button-primary-hover-border-color:#9A1B3D;
+
+    --p-button-text-primary-color: #c52b42;
+    --p-button-text-primary-hover-background: #dac7ca;
   
     /* Accent or Info Button */
     --p-button-info-color: #FFFFFF;
