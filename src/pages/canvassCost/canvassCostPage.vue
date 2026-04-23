@@ -8,8 +8,8 @@
     <h1 class="text-2xl text-gray-400">Canvass Cost</h1>
   </div>
 
-      <div class="flex-1 flex">
-        
+      <div class="flex-1 flex gap-2">
+        <Button label="Export" size="small" severity="secondary" icon="pi pi-file-excel"></Button> 
       </div>
 
     </div>
@@ -70,21 +70,21 @@
             <Column>
               <template #body="{ data }">
                 <div 
-                  class="mb-2 p-2 rounded cursor-pointer hover:text-white hover:bg-[#c52b42]"
-                  :class="isActive && selectedOrderId === data.id ? 'bg-[#c52b42] text-white' : 'border border-gray-300'"
+                  class="mb-2 p-2 rounded cursor-pointer hover:text-white hover:bg-[#378ed1]"
+                  :class="isActive && selectedOrderId === data.id ? 'bg-[#378ed1] text-white' : 'border border-gray-300'"
                   style="border: 2px solid #E8E6DE"
                   @click="selectedOrderMethod(data)"
                 >
-                  <p class="font-medium hover:text-white hover:bg-[#c52b42]">{{ data.salesOrderNo }}</p>
+                  <p class="font-medium hover:text-white">{{ data.salesOrderNo }}</p>
 
                   <!-- <small>Customer Ref No:</small> -->
-                  <p class="text-xs hover:text-white hover:bg-[#c52b42]">Customer Ref No: {{ data.customerRefNo }}</p>
+                  <p class="text-xs hover:text-white ">Customer Ref No: {{ data.customerRefNo }}</p>
 
                   <!-- <small>Customer Name:</small> -->
-                  <p class="text-xs hover:text-white hover:bg-[#c52b42]">Customer Name: {{ data.customerName }}</p>
+                  <p class="text-xs hover:text-white ">Customer Name: {{ data.customerName }}</p>
 
                   <!-- <small>Date:</small> -->
-                  <p class="text-xs hover:text-white hover:bg-[#c52b42]">Date: 
+                  <p class="text-xs hover:text-white ">Date: 
                     {{ formatDate(data.salesOrderDate) }}
                   </p>
                 </div>
@@ -123,8 +123,9 @@
       <ButtonGroup>
           <Button size="small" severity="secondary" @click="showDrawerDetail" label="Add Product" icon="pi pi-plus" />
           <Button size="small" severity="secondary" @click="showAddons()" label="Charges" icon="pi pi-credit-card" />
+          <Button size="small" severity="secondary" @click="assignAmPM()" label="Assign AM/ PM" icon="pi pi-user" />
           <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Remove" icon="pi pi-trash" />
-          <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Post" icon="pi pi-send" />
+          <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Lock" icon="pi pi-unlock" />
         </ButtonGroup>
 
     </div>
@@ -211,9 +212,8 @@
 
       <!-- Header -->
       <template #header>
-        <div class="flex justify-between items-center">
-          <span class="text-sm font-medium">Charges List</span>
-
+        <div class="flex justify-end items-center">
+          
           <IconField>
             <InputIcon>
               <i class="pi pi-search" />
@@ -320,55 +320,99 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 pt-4 px-1">
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">Customer Reference No.</label>
-            <InputText v-model="form.customerRefNo" class="p-inputtext-md border-gray-300" />
+            <InputText v-model="form.customerRefNo" size="small" class="p-inputtext-md border-gray-300" />
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">Customer Name</label>
-            <InputText v-model="form.customerName" class="p-inputtext-md border-gray-300" />
+            <InputText v-model="form.customerName" size="small" class="p-inputtext-md border-gray-300" />
           </div>
 
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">Transaction</label>
             <div class="flex gap-4 items-center h-10">
               <div class="flex items-center">
-                <RadioButton v-model="form.businesUnit" inputId="buFDC" value="FDC" />
+                <RadioButton v-model="form.businesUnit" size="small" inputId="buFDC" value="FDC" />
                 <label for="buFDC" class="ml-2 text-sm text-gray-700">FDC</label>
               </div>
               <div class="flex items-center">
-                <RadioButton v-model="form.businesUnit" inputId="buMSU" value="MSU" />
+                <RadioButton v-model="form.businesUnit" size="small" inputId="buMSU" value="MSU" />
                 <label for="buMSU" class="ml-2 text-sm text-gray-700">MSU</label>
               </div>
               <div class="flex items-center">
-                <RadioButton v-model="form.businesUnit" inputId="buCFI" value="CFI" />
+                <RadioButton v-model="form.businesUnit" size="small" inputId="buCFI" value="CFI" />
                 <label for="buCFI" class="ml-2 text-sm text-gray-700">CFI</label>
               </div>
             </div>
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">SO Number</label>
-            <InputText v-model="form.salesOrderNo" class="p-inputtext-md border-gray-300" />
+            <InputText v-model="form.salesOrderNo" size="small" class="p-inputtext-md border-gray-300" />
           </div>
 
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">SO Date</label>
-            <DatePicker v-model="form.salesOrderDate" class="w-full p-inputtext-md border-gray-300" />
+            <DatePicker v-model="form.salesOrderDate" size="small" class="w-full p-inputtext-md border-gray-300" />
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">PDEX Rate</label>
-            <InputText v-model="form.pdexRate" class="p-inputtext-md border-gray-300" />
+            <InputText v-model="form.pdexRate" size="small" class="p-inputtext-md border-gray-300" />
           </div>
 
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">Corporate</label>
             <div class="flex items-center h-10">
-              <Checkbox v-model="form.isCorporate" :binary="true" inputId="corp" />
+              <Checkbox v-model="form.isCorporate" size="small" :binary="true" inputId="corp" />
               <label for="corp" class="ml-2 text-sm text-gray-700">In-House</label>
             </div>
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-600">Period</label>
-            <Select v-model="form.yearCategory" :options="['One Year', 'Multi-Year']" class="w-full" />
+            <Select v-model="form.yearCategory" size="small" :options="['One Year', 'Multi-Year']" class="w-full" />
           </div>
+          <!-- <div class="flex flex-col gap-2">
+            <label class="text-sm font-bold text-gray-600">Account Manager</label>
+            <Select v-model="form.accountManager" size="small" :options="localAssociateSalesList" filter optionLabel="fullName" placeholder="Select a Account Manager" class="w-full mt-2">
+                <template #value="slotProps">
+                    <div v-if="slotProps.value" class="flex items-center">
+                        <div>
+                            {{ slotProps.value.fullName }}
+                        </div>
+                    </div>
+                    <span v-else>
+                        {{ slotProps.placeholder }}
+                    </span>
+                </template>
+                <template #option="slotProps">
+                    <div class="flex items-center">
+                        <div>
+                            {{ slotProps.option.fullName }}
+                        </div>
+                    </div>
+                </template>
+            </Select>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-bold text-gray-600">Product Manager</label>
+            <Select v-model="form.productManager" size="small" :options="localAssociateSalesList" filter optionLabel="fullName" placeholder="Select a Product Manager" class="w-full mt-2">
+                <template #value="slotProps">
+                    <div v-if="slotProps.value" class="flex items-center">
+                        <div>
+                            {{ slotProps.value.fullName }}
+                        </div>
+                    </div>
+                    <span v-else>
+                        {{ slotProps.placeholder }}
+                    </span>
+                </template>
+                <template #option="slotProps">
+                    <div class="flex items-center">
+                        <div>
+                            {{ slotProps.option.fullName }}
+                        </div>
+                    </div>
+                </template>
+            </Select>
+          </div> -->
         </div>
 
         <template #footer>
@@ -395,12 +439,70 @@
         </div>
     </Dialog>
 
+
+
+    <Dialog v-model:visible="visibleAssignAmPm" modal header="Assign AM/PM" :style="{ width: '25rem' }">
+     
+      <div class="flex flex-col gap-y-5">
+        <div class="gap-4">
+            <small>Account Manager</small>
+             <Select v-model="assignAm" size="small" :options="localAssociateSalesList" filter optionLabel="fullName" placeholder="Select a Account Manager" class="w-full">
+                <template #value="slotProps">
+                    <div v-if="slotProps.value" class="flex items-center">
+                        <div>
+                            {{ slotProps.value.fullName }}
+                        </div>
+                    </div>
+                    <span v-else>
+                        {{ slotProps.placeholder }}
+                    </span>
+                </template>
+                <template #option="slotProps">
+                    <div class="flex items-center">
+                        <div>
+                            {{ slotProps.option.fullName }}
+                        </div>
+                    </div>
+                </template>
+            </Select>
+        </div>
+        <div class="gap-4">
+            <small>Product Manager</small>
+            <Select v-model="assignPm" size="small" :options="localAssociateSalesList" filter optionLabel="fullName" placeholder="Select a Product Manager" class="w-full">
+                <template #value="slotProps">
+                    <div v-if="slotProps.value" class="flex items-center">
+                        <div>
+                            {{ slotProps.value.fullName }}
+                        </div>
+                    </div>
+                    <span v-else>
+                        {{ slotProps.placeholder }}
+                    </span>
+                </template>
+                <template #option="slotProps">
+                    <div class="flex items-center">
+                        <div>
+                            {{ slotProps.option.fullName }}
+                        </div>
+                    </div>
+                </template>
+            </Select>
+        </div>
+      
+      <div class="flex gap-2">
+          <Button type="button" class="w-full" size="small" label="Cancel" severity="secondary" @click="visibleAssignAmPm = false"></Button>
+          <Button type="button" class="w-full" size="small" label="Save" @click="saveAssignAmPm()"></Button>
+      </div>
+      </div>
+  </Dialog>
+
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'pinia';
 import { useCanvasCost } from '@/stores/canvasCost/CanvasCostStore';
+import { useAssociateSales } from '@/stores/systemSettings/AssociateSalesStore';
 import ComputationModal from '@/components/canvassCost/computationModal.vue';
 import moment from "moment";
 
@@ -408,6 +510,8 @@ import moment from "moment";
 export default {
   data() {
     return {
+      visibleAssignAmPm: false,
+      localAssociateSalesList: [],
       isActive: false,
       selectedOrderId: '',
       visibleRight: false,
@@ -426,7 +530,9 @@ export default {
         isCorporate: '',
         yearCategory: '',
         status: 'Draft',
-        createdSalesAgentBy: ''
+        createdSalesAgentBy: '',
+        accountManager: '',
+        productManager: ''
       },
       // Summary
       canvassCostData: [],
@@ -472,6 +578,8 @@ export default {
         costUnitVat: 0.00
       },
 
+      assignAm: null,
+      assignPm: null,
 
       productCodeListRaw: [],
       searchSalesOrder: '',
@@ -501,6 +609,9 @@ export default {
             addonsListByType: 'addonsListByType',
             canvasCostAddonsCharges: 'canvasCostAddonsCharges'
         }),
+      ...mapState(useAssociateSales, {
+            associateSalesList: 'associateSalesList'
+        }),
   },
   async mounted() {
   
@@ -510,18 +621,13 @@ export default {
     await this.fetchProductList();
     this.productCodeListRaw = this.productCodeList.data;
 
-    // if(this.canvassCostData.businesUnit == 'FDC') {
+    await this.fetchAddonsListByCategory();
+    this.addonsListByCategoryData = this.addonsListByCategory;
 
-      await this.fetchAddonsListByCategory();
-      this.addonsListByCategoryData = this.addonsListByCategory;
-      // console.log(this.addonsListByCategoryData);
-
-    // } else {
-
-    //   await this.fetchAddonsListByCategory();
-    //   this.addonsListByCategoryData = ['Charges'];
-
-    // }
+    await this.fetchAssociateSalesList();
+    this.localAssociateSalesList = this.associateSalesList;
+   
+   
     
       
   },
@@ -537,7 +643,12 @@ export default {
             fetchAddonsListByCategory: 'fetchAddonsListByCategory',
             fetchAddonsListByType: 'fetchAddonsListByType',
             postCanvasCostAddons: 'postCanvasCostAddons',
-            fetchCanvasCostAddonsChargesByHeader: 'fetchCanvasCostAddonsChargesByHeader'   
+            fetchCanvasCostAddonsChargesByHeader: 'fetchCanvasCostAddonsChargesByHeader',
+            updateCanvasCostAssignAmPm: 'updateCanvasCostAssignAmPm'   
+        }),
+      ...mapActions(useAssociateSales, {
+            fetchAssociateSalesList: 'fetchAssociateSalesList',
+            
         }),
       async showAddons() {
 
@@ -611,20 +722,7 @@ export default {
             };
 
       },
-      // async onCategoryChange() {
       
-      //     this.selectedType = null; // reset type
-      //     if (!this.addonsForm.selectedCategory) {
-      //       this.types = [];
-      //       return;
-      //     }
-
-      //     await this.fetchAddonsListByType('Charges');
-      //     this.types = this.addonsListByType;
-
-        
-      // },
-
     async showDrawerDetail() {
       this.visibleComputation = true;
     },      
@@ -693,6 +791,12 @@ export default {
 
       await this.fetchCanvassDetails(this.selectedOrderId);
       this.canvassDetailList = this.canvassCostDetails;
+
+      console.log(this.canvassCostHeaderDetails.accountManager);
+      console.log(this.canvassCostHeaderDetails.productManager);
+
+      this.assignAm = this.localAssociateSalesList.find(agent => agent.fullName === this.canvassCostHeaderDetails.accountManager) || null;
+      this.assignPm = this.localAssociateSalesList.find(agent => agent.fullName === this.canvassCostHeaderDetails.productManager) || null;
 
     },
     openModal(type) {
@@ -800,7 +904,39 @@ export default {
             await this.fetchCanvas(); 
             this.canvassCostData = this.canvasCostList; 
 
+    },
+    assignAmPM() {
+      
+      this.visibleAssignAmPm = true;
+      // this.assignAm = this.localAssociateSalesList.find(agent => agent.fullName === this.canvassCostHeaderDetails.accountManager) || null;
+      // this.assignPm = this.localAssociateSalesList.find(agent => agent.fullName === this.canvassCostHeaderDetails.productManager) || null;
+
+      console.log(this.assignAm);
+      console.log(this.assignPm);
+
+    },
+    async saveAssignAmPm() {
+
+      await this.updateCanvasCostAssignAmPm({
+        accountManager: this.assignAm.fullName,
+        productManager: this.assignPm.fullName
+      }, this.selectedOrderId).then(() => {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Updated',
+          detail: 'Account Manager and Product Manager assigned successfully.',
+          life: 1500
+        });
+        this.visibleAssignAmPm = false;
+      });
+
+       await this.fetchCanvasHeaderDetails(this.selectedOrderId);
+       this.canvassCostHeaderDetails = this.canvasCostHeaderDetails;
+
+       this.visibleAssignAmPm = false;
+
     }
+
   }
 }
 </script>
