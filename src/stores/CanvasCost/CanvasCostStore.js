@@ -251,8 +251,8 @@ export const useCanvasCost = defineStore('canvasCost', {
                 /** For API login and set the auth token */
                 const response = await api.put(`/CanvasCostSummary/assignAmPm/${id}`, {
                     id: id,
-                    assignAm : data.accountManager,
-                    assignPm: data.productManager
+                    assignAm : data.assignAm,
+                    assignPm: data.assignPm
                 });
 
                 return response.data;
@@ -291,7 +291,7 @@ export const useCanvasCost = defineStore('canvasCost', {
                     canvasCostHeaderId: data.canvasCostHeaderId,
                     productCode: data.productCode,
                     description: data.description,
-                    category: data.category,
+                    itemCategory: data.itemCategory,
                     quantity: data.quantity,  
                     spUnitVat: data.spUnitVat,
                     spQtyVat: data.spQtyVat,
@@ -337,6 +337,63 @@ export const useCanvasCost = defineStore('canvasCost', {
                 }
             }
         },
+
+         async updateCanvasCostDetail(data, id) {
+            try {
+                /** For API login and set the auth token */
+                const response = await api.put(`/CanvasCostDetails/${id}`, {
+                    id: id,
+                    canvasCostHeaderId: data.canvasCostHeaderId,
+                    productCode: data.productCode,
+                    description: data.description,
+                    itemCategory: data.itemCategory,
+                    quantity: data.quantity,  
+                    spUnitVat: data.spUnitVat,
+                    spQtyVat: data.spQtyVat,
+                    spUnitWoVat: data.spUnitWoVat,
+                    spQtyWoVat: data.spQtyWoVat,
+                    poRefDate: data.poRefDate,
+                    recommendedSupplier: data.recommendedSupplier,
+                    costUnitVat: data.costUnitVat,
+                    costQuantityVat: data.costQuantityVat,
+                    costUnitWoVat: data.costUnitWoVat,
+                    costQuantityWoVat: data.costQuantityWoVat,
+                    profitMarginWoVat: data.profitMarginWoVat,
+                    profitMargin: data.profitMargin,
+                    targetSellingPriceVat: data.targetSellingPriceVat
+                });
+
+                return response.data;
+
+            } catch (err) {
+
+                if (err.response) {
+                    const status = err.response.status; // 400, 401, 500, etc.
+                    const message = err.response.data?.message || 'An error occurred';
+
+                    console.error(`HTTP ${status}: ${message}`);
+                    this.error = message;
+
+                    // You can handle different statuses differently
+                    if (status === 400) {
+                        // Bad Request
+                        console.warn('Bad request: probably invalid input');
+                    } else if (status === 401) {
+                        // Unauthorized
+                        console.warn('Unauthorized: invalid credentials');
+                    }
+
+                    return { status, message };
+                } else {
+                    // Network error or no response
+                    this.error = 'Network error';
+                    console.error(this.error);
+                    return { status: null, message: this.error };
+                }
+            }
+        },
+
+
         async postCanvasCostAddons(data) {
             try {
                 /** For API login and set the auth token */
@@ -433,5 +490,44 @@ export const useCanvasCost = defineStore('canvasCost', {
             
             }
         },
+        
+        async exportFunction(id, data) {
+        try {
+            const response = await api.get(`/CanvasCostSummary/exportExcel/${id}`, {
+            responseType: "blob" // ✅ IMPORTANT
+            });
+
+            // ✅ Get filename (if backend sends Content-Disposition)
+            const disposition = response.headers?.["content-disposition"];
+            let filename = `CCS_${data.salesOrderNo}_${data.customerName}.xlsx`;
+
+            if (disposition && disposition.includes("filename=")) {
+            filename = disposition.split("filename=")[1].replace(/"/g, "").trim();
+            }
+
+            // ✅ Create blob and trigger download
+            const contentType =
+            response.headers?.["content-type"] ||
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+            const blob = new Blob([response.data], { type: contentType });
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+
+            a.remove();
+            window.URL.revokeObjectURL(url);
+
+            return true;
+        } catch (err) {
+            console.log("Error exporting canvas cost:", err);
+            throw err; // better than return false so your .catch works properly
+        }
+        }
+
     }
 });

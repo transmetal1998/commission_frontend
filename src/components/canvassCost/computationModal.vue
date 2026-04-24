@@ -7,7 +7,6 @@
         :style="{ width: '60vw' }" 
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
 
-        
         <div class="flex gap-4" v-if="synching">
           <div class="w-2/3">
 
@@ -100,31 +99,31 @@
                           class="w-full" 
                           size="small"/>
                           <InputGroupAddon>
-                              <Button icon="pi pi-search" @click="checkProductCode" size="small" severity="primary"/>
+                              <Button icon="pi pi-search" v-tooltip.bottom="'Compute Raw'"  @click="checkProductCode" size="small" severity="primary"/>
                           </InputGroupAddon>
                       </InputGroup>
                   </div>
                   <div>
                       <small>Category</small>
-                      <InputText v-model="localForm.category" type="text" class="w-full" size="small" />
+                      <InputText v-model="localForm.itemCategory" :disabled="localHeaderForm.businesUnit == 'FDC'" type="text" class="w-full" size="small" />
                     </div>
 
                     <div>
                       <small>Quantity</small>
-                      <InputNumber v-model="localForm.quantity" :minFractionDigits="2" @blur="computeRaw()" type="text" class="w-full" size="small" />
+                      <InputNumber v-model="localForm.quantity" :minFractionDigits="2" type="text"  @update:modelValue="changeInput" class="w-full" size="small" />
                     </div>
 
                     <div>
                       <small>Selling Price with VAT per Unit</small>
-                      <InputNumber v-model="localForm.spUnitVat" :minFractionDigits="2" @blur="computeRaw()" type="text" class="w-full" size="small" />
+                      <InputNumber v-model="localForm.spUnitVat"  @update:modelValue="changeInput" :minFractionDigits="2" type="text" class="w-full" size="small" />
                     </div>
 
                     <div>
                     <small>Cost Unit with VAT per Unit</small>
                         <InputNumber 
                           v-model="localForm.costUnitVat" 
+                           @update:modelValue="changeInput"
                           :minFractionDigits="2"
-                          @blur="computeRaw()"
                           type="text" 
                           size="small" 
                           class="w-full"
@@ -133,16 +132,24 @@
                   <div class="flex gap-2 mt-2">
                       <Button 
                         icon="pi pi-calculator"
-                        
+                        v-tooltip.bottom="'Compute Raw'"
                         size="small" 
                         severity="secondary" 
                         @click="computeRaw()" 
                       />
                       <Button 
                         icon="pi pi-sync"
+                        v-tooltip.bottom="'Sync SAP'"
                         @click="clickManualSync()"
                         size="small" 
-                        severity="primary" 
+                        severity="secondary" 
+                      />
+                      <Button 
+                        icon="pi pi-eraser"
+                        v-tooltip.bottom="'Clear Fields'"
+                        @click="clearField()"
+                        size="small" 
+                        severity="secondary" 
                       />
                       <Button 
                         label="Save" 
@@ -303,6 +310,10 @@ export default {
     headerForm: {
       type: Object,
       required: true
+    },
+    actionType: {
+      type: Boolean,
+      required: true
     }
   },
   emits: [
@@ -315,7 +326,9 @@ export default {
         localForm: { ...this.form },
         localProductCodeListRaw: [...this.propsProductListRaw],
         localHeaderForm: { ...this.headerForm },
-        synching: false
+        localActionType: this.actionType,
+        synching: false,
+        alreadyComputed: false
     };
 },
 computed: {
@@ -329,31 +342,62 @@ mounted() {
 methods: {
     ...mapActions(useCanvasCost, {
             postCanvasCostDetail: 'postCanvasCostDetail',
-            fetchProductSynchingSAP: 'fetchProductSynchingSAP'  
+            fetchProductSynchingSAP: 'fetchProductSynchingSAP',
+            updateCanvasCostDetail: 'updateCanvasCostDetail'
         }),
      async saveCanvassDetail() {
 
       if(this.isValidProductCode) {
-        await this.postCanvasCostDetail({
-          canvasCostHeaderId: this.selectedID,
-          productCode: this.localForm.productCode,
-          description: this.localForm.description,
-          category: this.localForm.category,
-          quantity: this.localForm.quantity,
-          spUnitVat: this.localForm.spUnitVat,
-          spQtyVat: this.localForm.spQtyVat,
-          spUnitWoVat: this.localForm.spUnitWoVat,
-          spQtyWoVat: this.localForm.spQtyWoVat,
-          poRefDate: this.localForm.poRefDate ? this.localForm.poRefDate.toISOString() : null,
-          recommendedSupplier: this.localForm.recommendedSupplier,
-          costUnitVat: this.localForm.costUnitVat,
-          costQuantityVat: this.localForm.costQuantityVat,
-          costUnitWoVat: this.localForm.costUnitWoVat,
-          costQuantityWoVat: this.localForm.costQuantityWoVat,
-          profitMarginWoVat: this.localForm.profitMarginWoVat,
-          profitMargin: this.localForm.profitMargin,
-          targetSellingPriceVat: this.localForm.targetSellingPriceVat
-        })
+
+        if (this.localActionType) {
+         
+          await this.postCanvasCostDetail({
+            canvasCostHeaderId: this.selectedID,
+            productCode: this.localForm.productCode,
+            description: this.localForm.description,
+            itemCategory: this.localForm.itemCategory,
+            quantity: this.localForm.quantity,
+            spUnitVat: this.localForm.spUnitVat,
+            spQtyVat: this.localForm.spQtyVat,
+            spUnitWoVat: this.localForm.spUnitWoVat,
+            spQtyWoVat: this.localForm.spQtyWoVat,
+            poRefDate: this.localForm.poRefDate ? this.localForm.poRefDate.toISOString() : null,
+            recommendedSupplier: this.localForm.recommendedSupplier,
+            costUnitVat: this.localForm.costUnitVat,
+            costQuantityVat: this.localForm.costQuantityVat,
+            costUnitWoVat: this.localForm.costUnitWoVat,
+            costQuantityWoVat: this.localForm.costQuantityWoVat,
+            profitMarginWoVat: this.localForm.profitMarginWoVat,
+            profitMargin: this.localForm.profitMargin,
+            targetSellingPriceVat: this.localForm.targetSellingPriceVat
+
+          })
+
+        } else {
+
+          await this.updateCanvasCostDetail({
+            id: this.localForm.id,
+            canvasCostHeaderId: this.selectedID,
+            productCode: this.localForm.productCode,
+            description: this.localForm.description,
+            itemCategory: this.localForm.itemCategory,
+            quantity: this.localForm.quantity,
+            spUnitVat: this.localForm.spUnitVat,
+            spQtyVat: this.localForm.spQtyVat,
+            spUnitWoVat: this.localForm.spUnitWoVat,
+            spQtyWoVat: this.localForm.spQtyWoVat,
+            poRefDate: this.localForm.poRefDate ? this.localForm.poRefDate.toISOString() : null,
+            recommendedSupplier: this.localForm.recommendedSupplier,
+            costUnitVat: this.localForm.costUnitVat,
+            costQuantityVat: this.localForm.costQuantityVat,
+            costUnitWoVat: this.localForm.costUnitWoVat,
+            costQuantityWoVat: this.localForm.costQuantityWoVat,
+            profitMarginWoVat: this.localForm.profitMarginWoVat,
+            profitMargin: this.localForm.profitMargin,
+            targetSellingPriceVat: this.localForm.targetSellingPriceVat
+          }, this.localForm.id)
+
+        }
 
 
         this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Canvass detail saved successfully.', life: 1500 });
@@ -361,7 +405,7 @@ methods: {
 
         this.localForm.productCode = '';
         this.localForm.description = '';
-        this.localForm.category = '';
+        this.localForm.itemCategory = '';
         this.localForm.quantity = 0.00;
         this.localForm.spUnitVat = 0.00;
         this.localForm.spQtyVat = 0.00;
@@ -384,11 +428,41 @@ methods: {
         this.$emit('saved', this.localForm);
 
         } else {
+         
+        if(this.localActionType) {
+
           this.$toast.add({ severity: 'error', summary: 'Error', detail: 'The entered product code was not found in the database. If the product exists in SAP, please click "Sync SAP" to retrieve the latest records.', life: 3000 });
-          this.isValidProductCode = false;
-          this.localForm.productCode = '';
+
+        } else {
+
+          this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Please validate the entered product code again when editing.', life: 3000 });
+        
         }
 
+
+        }
+
+    },
+    clearField() {
+        this.localForm.productCode = '';
+        this.localForm.description = '';
+        this.localForm.itemCategory = '';
+        this.localForm.quantity = 0.00;
+        this.localForm.spUnitVat = 0.00;
+        this.localForm.spQtyVat = 0.00;
+        this.localForm.spUnitWoVat = 0.00;
+        this.localForm.spQtyWoVat = 0.00;
+        this.localForm.poRefDate = '';
+        this.localForm.recommendedSupplier = '';
+        this.localForm.costUnitVat = 0.00;
+        this.localForm.costQuantityVat = 0.00;
+        this.localForm.costUnitWoVat = 0.00;
+        this.localForm.costQuantityWoVat = 0.00;
+        this.localForm.profitMarginWoVat = 0.00;
+        this.localForm.profitMargin = 0.00;
+        this.localForm.targetSellingPriceVat = 0.00;
+
+        this.isValidProductCode = false;
     },
     clickManualSync() {
       this.synching = true;
@@ -421,16 +495,35 @@ methods: {
 
         this.localForm.description = this.localProductCodeListRaw.find(item => item.itemNumber === this.localForm.productCode).itemDescription;
 
+        this.localForm.itemCategory = this.localProductCodeListRaw.find(item => item.itemNumber === this.localForm.productCode).itemCategory;
+
         this.isValidProductCode = true;
 
       } else {
+
+        if(this.localActionType) {
+
         this.$toast.add({ severity: 'error', summary: 'Error', detail: 'The entered product code was not found in the database. If the product exists in SAP, please click "Sync SAP" to retrieve the latest records.', life: 3000 });
+
+        } else {
+
+          this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Please validate the entered product code again when editing.', life: 3000 });
+        
+        }
+
+
         this.localForm.productCode = "";
         this.isValidProductCode = false;
+      
       }
     },
     computeRaw() {
 
+        
+        if(this.alreadyComputed) {
+            this.$toast.add({ severity: 'info', summary: 'Info', detail: 'The values have already been computed. Please modify the input values to compute again.', life: 3000 });
+            return;
+        }
 
         let _Quantity = parseFloat(this.localForm.quantity);
 
@@ -464,7 +557,14 @@ methods: {
         let _targetSellingPriceVat = _costQuantityVat / ( 1 - 0)
         this.localForm.targetSellingPriceVat = _targetSellingPriceVat.toFixed(2);
 
+        this.alreadyComputed = true;
+
+        
+
     },
+    changeInput() {
+        this.alreadyComputed = false;
+    }
 },  
 watch: {
     form: {
@@ -484,7 +584,13 @@ watch: {
         this.localHeaderForm = { ...val };
         },
         deep: true
-      }
+      },
+    actionType: {
+        handler(val) {
+        this.localActionType = val;
+      },
+        deep: true
+    }
   }
 }
 </script>

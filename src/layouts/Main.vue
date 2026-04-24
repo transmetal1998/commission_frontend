@@ -85,7 +85,7 @@ export default {
 
 /* Ensure the side-panel has its specific color from your screenshots */
 .side-panel {
-  background-color: #2a2a2a; /* Dark gray from your sidebar screenshot */
+  background-color: #334155; /* Dark gray from your sidebar screenshot */
 }
 
 /* Custom Header styling to match your previous UI */

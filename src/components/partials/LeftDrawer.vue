@@ -23,7 +23,7 @@
                   :href="href"
                   :class="[
                     'flex items-center cursor-pointer px-4 py-2',
-                    isActive ? 'bg-[#3c3c3c] text-white rounded-md' : 'text-surface-700 dark:text-surface-0'
+                    isActive ? 'bg-[#475569] text-white rounded-md' : 'text-surface-700 dark:text-surface-0'
                   ]"
                 >
                   <span :class="item.icon" />

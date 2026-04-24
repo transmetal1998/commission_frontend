@@ -9,7 +9,7 @@
   </div>
 
       <div class="flex-1 flex gap-2">
-        <Button label="Export" size="small" severity="secondary" icon="pi pi-file-excel"></Button> 
+        <Button label="Export" size="small" @click="exportData()" severity="secondary" icon="pi pi-file-excel"></Button> 
       </div>
 
     </div>
@@ -27,7 +27,7 @@
                 }
             }"
         >
-              <DataTable
+          <DataTable
 
             :value="canvassCostData"
             paginator
@@ -43,8 +43,8 @@
             <!-- HEADER (Search) -->
             <template #header>
               <div class="flex justify-end gap-2">
-                <Button size="small" severity="primary" @click="openModal('Create')" icon="pi pi-plus  " />
-                <Button size="small" severity="secondary" @click="openModal('Update')" icon="pi pi-pen-to-square" />
+                <Button size="small" v-tooltip.bottom="'Create Canvass Cost'" severity="primary" @click="openModal('Create')" icon="pi pi-plus  " />
+                <Button size="small" v-tooltip.bottom="'Update Canvass Cost'" severity="secondary" @click="openModal('Update')" icon="pi pi-pen-to-square" />
                 <IconField>
                   <InputIcon>
                     <i class="pi pi-search" />
@@ -70,21 +70,20 @@
             <Column>
               <template #body="{ data }">
                 <div 
-                  class="mb-2 p-2 rounded cursor-pointer hover:text-white hover:bg-[#378ed1]"
-                  :class="isActive && selectedOrderId === data.id ? 'bg-[#378ed1] text-white' : 'border border-gray-300'"
-                  style="border: 2px solid #E8E6DE"
+                  class="mb-2 p-2 rounded cursor-pointer "
+                  :class="isActive && selectedOrderId === data.id ? 'text-[#b6142c] border border-bottom-gray-500 font-semibold' : 'border border-bottom-gray-300'"
                   @click="selectedOrderMethod(data)"
                 >
-                  <p class="font-medium hover:text-white">{{ data.salesOrderNo }}</p>
+                  <p class="font-medium ">{{ data.salesOrderNo }}</p>
 
                   <!-- <small>Customer Ref No:</small> -->
-                  <p class="text-xs hover:text-white ">Customer Ref No: {{ data.customerRefNo }}</p>
+                  <p class="text-xs  ">Customer Ref No: {{ data.customerRefNo }}</p>
 
                   <!-- <small>Customer Name:</small> -->
-                  <p class="text-xs hover:text-white ">Customer Name: {{ data.customerName }}</p>
+                  <p class="text-xs  ">Customer Name: {{ data.customerName }}</p>
 
                   <!-- <small>Date:</small> -->
-                  <p class="text-xs hover:text-white ">Date: 
+                  <p class="text-xs  ">Date: 
                     {{ formatDate(data.salesOrderDate) }}
                   </p>
                 </div>
@@ -124,8 +123,8 @@
           <Button size="small" severity="secondary" @click="showDrawerDetail" label="Add Product" icon="pi pi-plus" />
           <Button size="small" severity="secondary" @click="showAddons()" label="Charges" icon="pi pi-credit-card" />
           <Button size="small" severity="secondary" @click="assignAmPM()" label="Assign AM/ PM" icon="pi pi-user" />
-          <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Remove" icon="pi pi-trash" />
-          <Button size="small" severity="primary"  @click="deleteRowDetail()"  label="Lock" icon="pi pi-unlock" />
+          <Button size="small" severity="secondary"  @click="deleteRowDetail()"  label="Remove" icon="pi pi-trash" />
+          <Button size="small" severity="secondary"  @click="deleteRowDetail()"  label="Post" icon="pi pi-unlock" />
         </ButtonGroup>
 
     </div>
@@ -196,19 +195,19 @@
         <div class="overflow-x-auto">
 
           <DataTable 
-      showGridlines 
-      stripedRows
-      v-model:filters="addonsChargesFilters"
-      :value="addonsChargesList" 
-      paginator 
-      :rows="5" 
-      :rowsPerPageOptions="[5,10,25]"
-      size="small"
-      dataKey="id"
-      filterDisplay="row"
-      :globalFilterFields="['category', 'type']"
-      responsiveLayout="scroll"
-    >
+          showGridlines 
+          stripedRows
+          v-model:filters="addonsChargesFilters"
+          :value="addonsChargesList" 
+          paginator 
+          :rows="5" 
+          :rowsPerPageOptions="[5,10,25]"
+          size="small"
+          dataKey="id"
+          filterDisplay="row"
+          :globalFilterFields="['category', 'type']"
+          responsiveLayout="scroll"
+        >
 
       <!-- Header -->
       <template #header>
@@ -245,14 +244,24 @@
       <!-- DELETE COLUMN -->
       <Column header="" style="width: 3rem; text-align: center">
         <template #body="slotProps">
+          <div class="flex flex-row">
           <Button 
             icon="pi pi-trash"
-            severity="danger"
+            severity="secondary"
             text
             rounded
             size="small"
             @click="deleteAddonRow(slotProps.data)"
           />
+           <Button 
+            icon="pi pi-pencil"
+            severity="secondary"
+            text
+            rounded
+            size="small"
+            @click="updateData(slotProps.data)"
+          />
+          </div>
         </template>
       </Column>
 
@@ -276,9 +285,16 @@
         class="p-datatable-sm"
       >
         <Column selectionMode="multiple"></Column>
-        <Column field="productCode" header="Product Code" style="min-width: 120px; font-size: 12px"></Column>
-        <Column field="description" header="Description" style="min-width: 260px; font-size: 12px"></Column>
-        <Column field="category" header="Category" style="min-width: 120px; font-size: 12px"></Column>
+        <Column field="productCode" header="Part Number" style="min-width: 120px; font-size: 12px"></Column>
+        <!-- <Column field="description" header="Description" style="min-width: 260px; font-size: 12px"></Column> -->
+        <Column header="Description" style="min-width: 260px; font-size: 12px">
+            <template #body="{ data }">
+              <div class="hover:cursor-pointer hover:text-[#c52b42] hover:font-semibold" @click="openDetailModal(data)">
+                {{ data.description }}%
+              </div>
+            </template>
+        </Column>
+        <Column field="itemCategory" header="Category" style="min-width: 120px; font-size: 12px"></Column>
         <Column field="spUnitVat" header="Unit Vat" style="min-width: 120px; font-size: 12px"></Column>
         <Column field="spQtyVat" header="Qty VAT" style="min-width: 120px; font-size: 12px"></Column>
         <Column field="spUnitWoVat" header="Unit w/o VAT" style="min-width: 120px; font-size: 12px"></Column>
@@ -302,6 +318,7 @@
 
     <ComputationModal
       v-model:visible="visibleComputation"
+      :actionType="isForInsert"
       :form="formData"
       :headerForm="canvassCostHeaderDetails"
       :selectedID="selectedOrderId"
@@ -369,50 +386,6 @@
             <label class="text-sm font-bold text-gray-600">Period</label>
             <Select v-model="form.yearCategory" size="small" :options="['One Year', 'Multi-Year']" class="w-full" />
           </div>
-          <!-- <div class="flex flex-col gap-2">
-            <label class="text-sm font-bold text-gray-600">Account Manager</label>
-            <Select v-model="form.accountManager" size="small" :options="localAssociateSalesList" filter optionLabel="fullName" placeholder="Select a Account Manager" class="w-full mt-2">
-                <template #value="slotProps">
-                    <div v-if="slotProps.value" class="flex items-center">
-                        <div>
-                            {{ slotProps.value.fullName }}
-                        </div>
-                    </div>
-                    <span v-else>
-                        {{ slotProps.placeholder }}
-                    </span>
-                </template>
-                <template #option="slotProps">
-                    <div class="flex items-center">
-                        <div>
-                            {{ slotProps.option.fullName }}
-                        </div>
-                    </div>
-                </template>
-            </Select>
-          </div>
-          <div class="flex flex-col gap-2">
-            <label class="text-sm font-bold text-gray-600">Product Manager</label>
-            <Select v-model="form.productManager" size="small" :options="localAssociateSalesList" filter optionLabel="fullName" placeholder="Select a Product Manager" class="w-full mt-2">
-                <template #value="slotProps">
-                    <div v-if="slotProps.value" class="flex items-center">
-                        <div>
-                            {{ slotProps.value.fullName }}
-                        </div>
-                    </div>
-                    <span v-else>
-                        {{ slotProps.placeholder }}
-                    </span>
-                </template>
-                <template #option="slotProps">
-                    <div class="flex items-center">
-                        <div>
-                            {{ slotProps.option.fullName }}
-                        </div>
-                    </div>
-                </template>
-            </Select>
-          </div> -->
         </div>
 
         <template #footer>
@@ -552,7 +525,7 @@ export default {
       formData: {
         productCode: '',
         description: '',
-        category: '',
+        itemCategory: '',
         quantity: 0.00,
         spUnitVat: 0.00,
         spQtyVat: 0.00,
@@ -595,7 +568,9 @@ export default {
 
       salesOrderFilters: {
         global: { value: null, matchMode: 'contains' },
-      }
+      },
+      isForInsert: true,
+      isForInsertAddons: true,
 
     }
   },
@@ -607,7 +582,8 @@ export default {
             productCodeList: 'productCodeList',
             addonsListByCategory: 'addonsListByCategory',
             addonsListByType: 'addonsListByType',
-            canvasCostAddonsCharges: 'canvasCostAddonsCharges'
+            canvasCostAddonsCharges: 'canvasCostAddonsCharges',
+            exportFunction: 'exportFunction'
         }),
       ...mapState(useAssociateSales, {
             associateSalesList: 'associateSalesList'
@@ -673,6 +649,8 @@ export default {
       }, 
       async saveToAddons() {
 
+
+
           if(!this.addonsForm.selectedType || !this.addonsForm.quantity) {
             this.$toast.add({
               severity: 'warn',
@@ -692,6 +670,9 @@ export default {
             costUnitVat: this.addonsForm.costUnitVat
           };
 
+          if (this.isForInsertAddons) {
+          
+
           await this.postCanvasCostAddons(payload)
             .then(() => {
               this.$toast.add({
@@ -700,18 +681,36 @@ export default {
                 detail: 'Add-on charge added successfully.',
                 life: 1500
               });
-              // Optionally, refresh the add-ons list here
             })
             .catch(err => {
               console.error('Error adding add-on charge:', err);
               alert('Failed to add add-on charge. Please try again.');
             }); 
 
+              
+          } else {
+
+            alert('Failed to add add-on charge. Please try again.')
+            //  await this.postCanvasCostAddons(payload, this.addonsForm.id)
+            //   .then(() => {
+            //     this.$toast.add({
+            //       severity: 'success',
+            //       summary: 'Added',
+            //       detail: 'Add-on charge added successfully.',
+            //       life: 1500
+            //     });
+            //   })
+            //   .catch(err => {
+            //     console.error('Error adding add-on charge:', err);
+            //     alert('Failed to add add-on charge. Please try again.');
+            //   }); 
+
+          }
+
             await this.fetchCanvasCostAddonsChargesByHeader(this.selectedOrderId).then(() => {
               this.addonsChargesList = this.canvasCostAddonsCharges;
             });
 
-            // this.visibleRight = false;
 
             this.addonsForm = {
               selectedCategory: '',
@@ -724,9 +723,31 @@ export default {
       },
       
     async showDrawerDetail() {
+      this.isForInsert = true
+      this.formData = {
+        productCode: '',
+        description: '',
+        itemCategory: '',        
+        quantity: 0.00,
+        spUnitVat: 0.00,
+        spQtyVat: 0.00,
+        spUnitWoVat: 0.00,
+        spQtyWoVat: 0.00,
+        poRefDate: '',
+        recommendedSupplier: '',
+        costUnitVat: 0.00,
+        costRawUnitVat: 0.00,
+        costQuantityVat: 0.00,
+        costUnitWoVat: 0.00,
+        costQuantityWoVat: 0.00,
+        profitMarginWoVat: 0.00,
+        profitMargin: 0.00,
+        targetSellingPriceVat: 0.00
+      };
+
       this.visibleComputation = true;
+  
     },      
-    
     async loadTableData() {
 
       await this.fetchCanvassDetails(this.selectedOrderId).then(() => {
@@ -739,11 +760,7 @@ export default {
 
     },
     deleteAddonRow(data) {
-
-      // var addonId[] = data.id;
-
       console.log(data.id);
-
     },
     async confirmDelete() {
     
@@ -792,11 +809,9 @@ export default {
       await this.fetchCanvassDetails(this.selectedOrderId);
       this.canvassDetailList = this.canvassCostDetails;
 
-      console.log(this.canvassCostHeaderDetails.accountManager);
-      console.log(this.canvassCostHeaderDetails.productManager);
+      this.assignAm = this.localAssociateSalesList.find(agent => agent.username === this.canvassCostHeaderDetails.assignAm) || null;
+      this.assignPm = this.localAssociateSalesList.find(agent => agent.username === this.canvassCostHeaderDetails.assignPm) || null;
 
-      this.assignAm = this.localAssociateSalesList.find(agent => agent.fullName === this.canvassCostHeaderDetails.accountManager) || null;
-      this.assignPm = this.localAssociateSalesList.find(agent => agent.fullName === this.canvassCostHeaderDetails.productManager) || null;
 
     },
     openModal(type) {
@@ -908,18 +923,13 @@ export default {
     assignAmPM() {
       
       this.visibleAssignAmPm = true;
-      // this.assignAm = this.localAssociateSalesList.find(agent => agent.fullName === this.canvassCostHeaderDetails.accountManager) || null;
-      // this.assignPm = this.localAssociateSalesList.find(agent => agent.fullName === this.canvassCostHeaderDetails.productManager) || null;
-
-      console.log(this.assignAm);
-      console.log(this.assignPm);
-
+     
     },
     async saveAssignAmPm() {
 
       await this.updateCanvasCostAssignAmPm({
-        accountManager: this.assignAm.fullName,
-        productManager: this.assignPm.fullName
+        assignAm: this.assignAm.username,
+        assignPm: this.assignPm.username
       }, this.selectedOrderId).then(() => {
         this.$toast.add({
           severity: 'success',
@@ -927,15 +937,52 @@ export default {
           detail: 'Account Manager and Product Manager assigned successfully.',
           life: 1500
         });
-        this.visibleAssignAmPm = false;
       });
 
-       await this.fetchCanvasHeaderDetails(this.selectedOrderId);
-       this.canvassCostHeaderDetails = this.canvasCostHeaderDetails;
+        this.visibleAssignAmPm = false;
+        await this.fetchCanvasHeaderDetails(this.selectedOrderId);
+        this.canvassCostHeaderDetails = this.canvasCostHeaderDetails;
 
-       this.visibleAssignAmPm = false;
+    },
+    openDetailModal(data) {
+      this.formData = { ...data };
+      this.visibleComputation = true; 
+      this.isForInsert = false;
+    },
+    exportData() {
+
+        if (!this.selectedOrderId) {
+            this.$toast.add({
+              severity: "warn",
+              summary: "No Selection",
+              detail: "Please select a sales order to export.",
+              life: 3000
+            });
+            return;
+          }
+
+      this.exportFunction(this.selectedOrderId, this.canvassCostHeaderDetails)
+        .catch((err) => {
+          console.error("Error exporting data:", err);
+          this.$toast.add({
+            severity: "error",
+            summary: "Export Failed",
+            detail: "Failed to export data. Please try again.",
+            life: 2000
+          });
+        });
+    },
+    updateData(data) {
+
+      this.addonsForm.selectedType = data.type;
+      this.addonsForm.quantity = data.quantity;
+      this.addonsForm.spUnitVat = data.spUnitVat;
+      this.addonsForm.costUnitVat = data.costUnitVat;
+
+      this.isForInsertAddons = false;
 
     }
+
 
   }
 }

@@ -2,9 +2,9 @@
   --p-panelmenu-panel-background: transparent;
   --p-panelmenu-panel-border-color: transparent;
   --p-panelmenu-item-color: rgb(255, 255, 255);
-  --p-panelmenu-item-focus-background: #3c3c3c; 
+  --p-panelmenu-item-focus-background: #475569; 
   --p-panelmenu-item-focus-color: white;
-  --p-panelmenu-submenu-icon-focus-color: #3c3c3c;
+  --p-panelmenu-submenu-icon-focus-color: #475569;
   --p-panelmenu-item-icon-color: #BEBEBE;
   --p-panelmenu-item-padding: 1rem;
   /* --p-panelmenu-panel-border-radius: 6px;
