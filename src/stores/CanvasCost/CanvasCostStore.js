@@ -337,8 +337,7 @@ export const useCanvasCost = defineStore('canvasCost', {
                 }
             }
         },
-
-         async updateCanvasCostDetail(data, id) {
+        async updateCanvasCostDetail(data, id) {
             try {
                 /** For API login and set the auth token */
                 const response = await api.put(`/CanvasCostDetails/${id}`, {
@@ -392,8 +391,56 @@ export const useCanvasCost = defineStore('canvasCost', {
                 }
             }
         },
+        async updateCanvasCostAddons(data, id) {
+            try {
+                /** For API login and set the auth token */
+                const response = await api.put(`/CanvasCostAddonsCharges/${id}`, {
+                    id: id,
+                    canvasCostHeaderId: data.canvasCostHeaderId,
+                    category: data.category,
+                    type: data.type,
+                    quantity: data.quantity,  
+                    spUnitVat: data.spUnitVat,
+                    spQtyVat: 0.00,
+                    spUnitWoVat: 0.00,
+                    spQtyWoVat: 0.00,
+                    costUnitVat: data.costUnitVat,
+                    costQuantityVat: 0.00,
+                    costUnitWoVat: 0.00,
+                    costQuantityWoVat: 0.00,
+                    profitMarginWoVat: 0.00,
+                    profitMargin: 0.00
+                });
 
+                return response.data;
 
+            } catch (err) {
+
+                if (err.response) {
+                    const status = err.response.status; // 400, 401, 500, etc.
+                    const message = err.response.data?.message || 'An error occurred';
+
+                    console.error(`HTTP ${status}: ${message}`);
+                    this.error = message;
+
+                    // You can handle different statuses differently
+                    if (status === 400) {
+                        // Bad Request
+                        console.warn('Bad request: probably invalid input');
+                    } else if (status === 401) {
+                        // Unauthorized
+                        console.warn('Unauthorized: invalid credentials');
+                    }
+
+                    return { status, message };
+                } else {
+                    // Network error or no response
+                    this.error = 'Network error';
+                    console.error(this.error);
+                    return { status: null, message: this.error };
+                }
+            }
+        },
         async postCanvasCostAddons(data) {
             try {
                 /** For API login and set the auth token */
@@ -490,7 +537,6 @@ export const useCanvasCost = defineStore('canvasCost', {
             
             }
         },
-        
         async exportFunction(id, data) {
         try {
             const response = await api.get(`/CanvasCostSummary/exportExcel/${id}`, {
@@ -527,7 +573,76 @@ export const useCanvasCost = defineStore('canvasCost', {
             console.log("Error exporting canvas cost:", err);
             throw err; // better than return false so your .catch works properly
         }
-        }
+        },
+        async deleteCanvasCostAddonsCharges(id) {
+            try {
+                /** For API login and set the auth token */
+                const response = await api.delete(`/CanvasCostAddonsCharges/${id}`);
+                return response.data;
 
+            } catch (err) {
+
+                if (err.response) {
+                    const status = err.response.status; // 400, 401, 500, etc.
+                    const message = err.response.data?.message || 'An error occurred';
+
+                    console.error(`HTTP ${status}: ${message}`);
+                    this.error = message;
+
+                    // You can handle different statuses differently
+                    if (status === 400) {
+                        // Bad Request
+                        console.warn('Bad request: probably invalid input');
+                    } else if (status === 401) {
+                        // Unauthorized
+                        console.warn('Unauthorized: invalid credentials');
+                    }
+
+                    return { status, message };
+                } else {
+                    // Network error or no response
+                    this.error = 'Network error';
+                    console.error(this.error);
+                    return { status: null, message: this.error };
+                }
+            }
+        },
+        async updateCanvasCostStatus(data, id) {
+            try {
+                /** For API login and set the auth token */
+                const response = await api.put(`/CanvasCostSummary/updateStatusCanvasCost/${id}`, {
+                    id: id,
+                    status: data.status
+                });
+
+                return response.data;
+
+            } catch (err) {
+
+                if (err.response) {
+                    const status = err.response.status; // 400, 401, 500, etc.
+                    const message = err.response.data?.message || 'An error occurred';
+
+                    console.error(`HTTP ${status}: ${message}`);
+                    this.error = message;
+
+                    // You can handle different statuses differently
+                    if (status === 400) {
+                        // Bad Request
+                        console.warn('Bad request: probably invalid input');
+                    } else if (status === 401) {
+                        // Unauthorized
+                        console.warn('Unauthorized: invalid credentials');
+                    }
+
+                    return { status, message };
+                } else {
+                    // Network error or no response
+                    this.error = 'Network error';
+                    console.error(this.error);
+                    return { status: null, message: this.error };
+                }
+            }
+        },
     }
 });

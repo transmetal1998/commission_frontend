@@ -10,6 +10,7 @@
 
       <div class="flex-1 flex gap-2">
         <Button label="Export" size="small" @click="exportData()" severity="secondary" icon="pi pi-file-excel"></Button> 
+
       </div>
 
     </div>
@@ -17,8 +18,6 @@
     <div class="flex mt-2 gap-2">
     <!-- Left side: card with vertical scrolling -->
     <div class="w-1/4">
-
-
         <ScrollPanel
             style="width: 100%; height: 430px"
             :dt="{
@@ -69,34 +68,55 @@
             <!-- CUSTOM CARD TEMPLATE -->
             <Column>
               <template #body="{ data }">
-                <div 
-                  class="mb-2 p-2 rounded cursor-pointer "
-                  :class="isActive && selectedOrderId === data.id ? 'text-[#b6142c] border border-bottom-gray-500 font-semibold' : 'border border-bottom-gray-300'"
+         
+                <div
+                  class="mb-2 p-3 rounded-md cursor-pointer border transition"
+                  :class="isActive && selectedOrderId === data.id
+                    ? 'border-[#b6142c] bg-red-50'
+                    : 'border-gray-300 hover:border-gray-400'"
                   @click="selectedOrderMethod(data)"
                 >
-                  <p class="font-medium ">{{ data.salesOrderNo }}</p>
+                  <!-- Header -->
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                      <p class="text-sm font-semibold text-[#b6142c] leading-tight">
+                        {{ data.salesOrderNo }}
+                      </p>
+                    </div>
 
-                  <!-- <small>Customer Ref No:</small> -->
-                  <p class="text-xs  ">Customer Ref No: {{ data.customerRefNo }}</p>
+                    <span
+                      :class="data.status === 'Posted' ? 'px-2 py-1 rounded-md text-xs font-semibold bg-[#b6142c] text-white' : 'px-2 py-1 rounded-md text-xs font-semibold bg-red-100 text-[#b6142c]'"
+                    >
+                      {{ data.status }}
+                    </span>
+                  </div>
 
-                  <!-- <small>Customer Name:</small> -->
-                  <p class="text-xs  ">Customer Name: {{ data.customerName }}</p>
+                  <div class="my-2 border-t border-gray-200"></div>
 
-                  <!-- <small>Date:</small> -->
-                  <p class="text-xs  ">Date: 
-                    {{ formatDate(data.salesOrderDate) }}
-                  </p>
+                  <!-- Details -->
+                  <div class="gap-x-4 gap-y-2 text-sm">
+
+                    <!-- Value (wrap) -->
+                    <div class="text-left text-gray-900 whitespace-normal break-words">
+                      CRN: {{ data.customerRefNo }}
+                    </div>
+
+                    
+                    <div class="text-left text-gray-900 whitespace-normal break-words">
+                      Customer: {{ data.customerName }}
+                    </div>
+
+                    
+                    <div class="text-left text-gray-900 whitespace-normal break-words">
+                      SO Date:{{ formatDate(data.salesOrderDate) }}
+                    </div>
+                  </div>
                 </div>
+
               </template>
             </Column>
           </DataTable>
         </ScrollPanel>
-
-
-        
-
-
-
     </div>
 
     <!-- Right side: content for selected item -->
@@ -117,15 +137,16 @@
 
     <div class="bg-gray-200 h-[8px] mb-4 -mx-4"></div>
 
-    <div class="flex gap-2 justify-end mb-4">
-
-      <ButtonGroup>
+    <div class="flex gap-1 justify-end mb-4">
+      
           <Button size="small" severity="secondary" @click="showDrawerDetail" label="Add Product" icon="pi pi-plus" />
           <Button size="small" severity="secondary" @click="showAddons()" label="Charges" icon="pi pi-credit-card" />
           <Button size="small" severity="secondary" @click="assignAmPM()" label="Assign AM/ PM" icon="pi pi-user" />
-          <Button size="small" severity="secondary"  @click="deleteRowDetail()"  label="Remove" icon="pi pi-trash" />
-          <Button size="small" severity="secondary"  @click="deleteRowDetail()"  label="Post" icon="pi pi-unlock" />
-        </ButtonGroup>
+          <Button size="small" v-if="this.isForDraft" severity="secondary"  @click="deleteRowDetail()"  label="Remove" icon="pi pi-trash" />
+          <Button size="small" v-if="this.isForDraft" severity="secondary"  @click="postedRecord()"  label="Post" icon="pi pi-unlock" />
+        
+
+
 
     </div>
 
@@ -178,6 +199,7 @@
           <div>
             <!-- <small class="text-gray-500">Save this Charges?</small> -->
             <Button 
+            v-if="this.isForDraft"
             severity="primary" 
             @click="saveToAddons()" 
             label="Save Charges" 
@@ -234,32 +256,32 @@
       </template>
 
       <!-- Columns -->
-      <Column field="type" header="Type" sortable />
-      <Column field="quantity" header="Qty" sortable />
-      <Column field="costUnitVat" header="Unit (VAT)" sortable />
-      <Column field="costQuantityVat" header="Qty (VAT)" sortable />
-      <Column field="costUnitWoVat" header="Unit (w/o VAT)" sortable />
-      <Column field="costQuantityWoVat" header="Qty (w/o VAT)" sortable />
+      <Column field="type" header="Type" sortable  bodyClass="text-sm"/>
+      <Column field="quantity" header="Qty" sortable bodyClass="text-sm"/>
+      <Column field="costUnitVat" header="Unit (VAT)" sortable bodyClass="text-sm"/>
+      <Column field="costQuantityVat" header="Qty (VAT)" sortable bodyClass="text-sm"/>
+      <Column field="costUnitWoVat" header="Unit (w/o VAT)" sortable bodyClass="text-sm"/>
+      <Column field="costQuantityWoVat" header="Qty (w/o VAT)" sortable bodyClass="text-sm"/>
 
       <!-- DELETE COLUMN -->
       <Column header="" style="width: 3rem; text-align: center">
         <template #body="slotProps">
           <div class="flex flex-row">
-          <Button 
-            icon="pi pi-trash"
-            severity="secondary"
-            text
-            rounded
-            size="small"
-            @click="deleteAddonRow(slotProps.data)"
-          />
-           <Button 
+            <Button 
             icon="pi pi-pencil"
             severity="secondary"
             text
             rounded
             size="small"
             @click="updateData(slotProps.data)"
+          />
+          <Button 
+            icon="pi pi-trash"
+            severity="secondary"
+            text
+            rounded
+            size="small"
+            @click="deleteChargeAddOns(slotProps.data)"
           />
           </div>
         </template>
@@ -271,9 +293,6 @@
       </div>
 
     </Dialog>
-
-
-
     <div class="flex-1 min-h-0">
       <DataTable
       stripedRows
@@ -412,8 +431,6 @@
         </div>
     </Dialog>
 
-
-
     <Dialog v-model:visible="visibleAssignAmPm" modal header="Assign AM/PM" :style="{ width: '25rem' }">
      
       <div class="flex flex-col gap-y-5">
@@ -464,10 +481,24 @@
       
       <div class="flex gap-2">
           <Button type="button" class="w-full" size="small" label="Cancel" severity="secondary" @click="visibleAssignAmPm = false"></Button>
-          <Button type="button" class="w-full" size="small" label="Save" @click="saveAssignAmPm()"></Button>
+          <Button type="button" class="w-full"  v-if="this.isForDraft" size="small" label="Save" @click="saveAssignAmPm()"></Button>
       </div>
       </div>
-  </Dialog>
+    </Dialog>
+
+    <Dialog v-model:visible="visibleConfirmationToPost" modal header="Confirmation" :style="{ width: '25rem' }">
+        <div class="flex items-center gap-4 mb-4">
+            <small>
+              Are you sure you want to post this record? <br>
+              <span class="font-semibold text-[#c52b42]">[SO Number: {{ this.canvasCostHeaderDetails.salesOrderNo }}]</span> <br><br>
+              Once posted, this record can no longer be edited or deleted. Please confirm to proceed.
+            </small>
+        </div>
+        <div class="flex justify-end gap-2">
+            <Button type="button" label="Cancel" size="small" severity="secondary" @click="visibleConfirmationToPost = false"></Button>
+            <Button type="button" label="Confirm" size="small" @click="confirmToPostThis()" ></Button>
+        </div>
+    </Dialog>
 
   </div>
 </template>
@@ -544,6 +575,7 @@ export default {
       },
 
       addonsForm: {
+        id: null,
         selectedCategory: '',
         selectedType: '',
         quantity: 0.00,
@@ -571,6 +603,9 @@ export default {
       },
       isForInsert: true,
       isForInsertAddons: true,
+      isForDraft : true,
+
+      visibleConfirmationToPost: false,
 
     }
   },
@@ -583,7 +618,6 @@ export default {
             addonsListByCategory: 'addonsListByCategory',
             addonsListByType: 'addonsListByType',
             canvasCostAddonsCharges: 'canvasCostAddonsCharges',
-            exportFunction: 'exportFunction'
         }),
       ...mapState(useAssociateSales, {
             associateSalesList: 'associateSalesList'
@@ -601,84 +635,100 @@ export default {
     this.addonsListByCategoryData = this.addonsListByCategory;
 
     await this.fetchAssociateSalesList();
-    this.localAssociateSalesList = this.associateSalesList;
-   
-   
-    
+    this.localAssociateSalesList = this.associateSalesList; 
       
   },
   methods: {
     ...mapActions(useCanvasCost, {
-            fetchCanvas: 'fetchCanvas',
-            fetchCanvasHeaderDetails: 'fetchCanvasHeaderDetails',
-            fetchProductList: 'fetchProductList',
-            postCanvasCost: 'postCanvasCost',
-            updateCanvasCost: 'updateCanvasCost',
-            fetchCanvassDetails: 'fetchCanvassDetails',
-            deleteCanvasCostDetail: 'deleteCanvasCostDetail',
-            fetchAddonsListByCategory: 'fetchAddonsListByCategory',
-            fetchAddonsListByType: 'fetchAddonsListByType',
-            postCanvasCostAddons: 'postCanvasCostAddons',
-            fetchCanvasCostAddonsChargesByHeader: 'fetchCanvasCostAddonsChargesByHeader',
-            updateCanvasCostAssignAmPm: 'updateCanvasCostAssignAmPm'   
-        }),
-      ...mapActions(useAssociateSales, {
-            fetchAssociateSalesList: 'fetchAssociateSalesList',
-            
-        }),
-      async showAddons() {
+          fetchCanvas: 'fetchCanvas',
+          fetchCanvasHeaderDetails: 'fetchCanvasHeaderDetails',
+          fetchProductList: 'fetchProductList',
+          postCanvasCost: 'postCanvasCost',
+          updateCanvasCost: 'updateCanvasCost',
+          fetchCanvassDetails: 'fetchCanvassDetails',
+          deleteCanvasCostDetail: 'deleteCanvasCostDetail',
+          fetchAddonsListByCategory: 'fetchAddonsListByCategory',
+          fetchAddonsListByType: 'fetchAddonsListByType',
+          postCanvasCostAddons: 'postCanvasCostAddons',
+          fetchCanvasCostAddonsChargesByHeader: 'fetchCanvasCostAddonsChargesByHeader',
+          updateCanvasCostAssignAmPm: 'updateCanvasCostAssignAmPm',   
+          exportFunction: 'exportFunction',
+          updateCanvasCostAddons: 'updateCanvasCostAddons',
+          deleteCanvasCostAddonsCharges: 'deleteCanvasCostAddonsCharges',
+          updateCanvasCostStatus: 'updateCanvasCostStatus'
+      }),
+    ...mapActions(useAssociateSales, {
+          fetchAssociateSalesList: 'fetchAssociateSalesList',
+          
+      }),
+    async showAddons() {
 
-        if(!this.selectedOrderId) {
+      if(!this.selectedOrderId) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Warning',
+          detail: 'Please select a sales order to view add-ons.',
+          life: 1500
+        });
+        return;
+      }
+
+      await this.fetchCanvasCostAddonsChargesByHeader(this.selectedOrderId).then(() => {
+        this.addonsChargesList = this.canvasCostAddonsCharges;
+      });
+
+      await this.fetchAddonsListByType('Charges');
+      this.types = this.addonsListByType;
+
+      this.visibleRight = true;
+    }, 
+    async saveToAddons() {
+
+        if(!this.addonsForm.selectedType || !this.addonsForm.quantity) {
           this.$toast.add({
             severity: 'warn',
             summary: 'Warning',
-            detail: 'Please select a sales order to view add-ons.',
+            detail: 'Please fill in all required fields.',
             life: 1500
           });
           return;
         }
 
-        await this.fetchCanvasCostAddonsChargesByHeader(this.selectedOrderId).then(() => {
-          this.addonsChargesList = this.canvasCostAddonsCharges;
-        });
+        const payload = {
+          canvasCostHeaderId: this.selectedOrderId,
+          category: this.addonsForm.selectedCategory,
+          type: this.addonsForm.selectedType,
+          quantity: this.addonsForm.quantity,
+          spUnitVat: this.addonsForm.spUnitVat,
+          costUnitVat: this.addonsForm.costUnitVat
+        };
 
-        await this.fetchAddonsListByType('Charges');
-        this.types = this.addonsListByType;
+        if (this.isForInsertAddons) {
+        
 
-        this.visibleRight = true;
-      }, 
-      async saveToAddons() {
-
-
-
-          if(!this.addonsForm.selectedType || !this.addonsForm.quantity) {
+        await this.postCanvasCostAddons(payload)
+          .then(() => {
             this.$toast.add({
-              severity: 'warn',
-              summary: 'Warning',
-              detail: 'Please fill in all required fields.',
+              severity: 'success',
+              summary: 'Added',
+              detail: 'Add-on charge added successfully.',
               life: 1500
             });
-            return;
-          }
+          })
+          .catch(err => {
+            console.error('Error adding add-on charge:', err);
+            alert('Failed to add add-on charge. Please try again.');
+          }); 
 
-          const payload = {
-            canvasCostHeaderId: this.selectedOrderId,
-            category: this.addonsForm.selectedCategory,
-            type: this.addonsForm.selectedType,
-            quantity: this.addonsForm.quantity,
-            spUnitVat: this.addonsForm.spUnitVat,
-            costUnitVat: this.addonsForm.costUnitVat
-          };
+            
+        } else {
 
-          if (this.isForInsertAddons) {
-          
-
-          await this.postCanvasCostAddons(payload)
+            await this.updateCanvasCostAddons(payload, this.addonsForm.id)
             .then(() => {
               this.$toast.add({
                 severity: 'success',
                 summary: 'Added',
-                detail: 'Add-on charge added successfully.',
+                detail: 'Add-on charge update successfully.',
                 life: 1500
               });
             })
@@ -687,41 +737,24 @@ export default {
               alert('Failed to add add-on charge. Please try again.');
             }); 
 
-              
-          } else {
+        }
 
-            alert('Failed to add add-on charge. Please try again.')
-            //  await this.postCanvasCostAddons(payload, this.addonsForm.id)
-            //   .then(() => {
-            //     this.$toast.add({
-            //       severity: 'success',
-            //       summary: 'Added',
-            //       detail: 'Add-on charge added successfully.',
-            //       life: 1500
-            //     });
-            //   })
-            //   .catch(err => {
-            //     console.error('Error adding add-on charge:', err);
-            //     alert('Failed to add add-on charge. Please try again.');
-            //   }); 
-
-          }
-
-            await this.fetchCanvasCostAddonsChargesByHeader(this.selectedOrderId).then(() => {
-              this.addonsChargesList = this.canvasCostAddonsCharges;
-            });
+          await this.fetchCanvasCostAddonsChargesByHeader(this.selectedOrderId).then(() => {
+            this.addonsChargesList = this.canvasCostAddonsCharges;
+          });
 
 
-            this.addonsForm = {
-              selectedCategory: '',
-              selectedType: '',
-              quantity: 0.00,
-              spUnitVat: 0.00,
-              costUnitVat: 0.00
-            };
+          this.addonsForm = {
+            selectedCategory: '',
+            selectedType: '',
+            quantity: 0.00,
+            spUnitVat: 0.00,
+            costUnitVat: 0.00
+          };
 
-      },
-      
+          this.isForInsertAddons = true;
+
+    },   
     async showDrawerDetail() {
       this.isForInsert = true
       this.formData = {
@@ -797,7 +830,6 @@ export default {
       }
       this.visibleDeleteConfirmation = true;
     },
-   
     async selectedOrderMethod(item) {
 
       this.isActive = true;
@@ -812,6 +844,7 @@ export default {
       this.assignAm = this.localAssociateSalesList.find(agent => agent.username === this.canvassCostHeaderDetails.assignAm) || null;
       this.assignPm = this.localAssociateSalesList.find(agent => agent.username === this.canvassCostHeaderDetails.assignPm) || null;
 
+      this.isForDraft = this.canvassCostHeaderDetails.status === 'Draft' ? true : false;
 
     },
     openModal(type) {
@@ -974,6 +1007,7 @@ export default {
     },
     updateData(data) {
 
+      this.addonsForm.id = data.id;
       this.addonsForm.selectedType = data.type;
       this.addonsForm.quantity = data.quantity;
       this.addonsForm.spUnitVat = data.spUnitVat;
@@ -981,9 +1015,60 @@ export default {
 
       this.isForInsertAddons = false;
 
-    }
+    },
+    async deleteChargeAddOns(data) {
 
+      await this.deleteCanvasCostAddonsCharges(data.id)
+        .then(() => {
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Deleted',
+            detail: 'Selected charge deleted successfully.',
+            life: 1500
+          });
+          this.fetchCanvasCostAddonsChargesByHeader(this.selectedOrderId).then(() => {
+            this.addonsChargesList = this.canvasCostAddonsCharges;
+          });
+        })
+        .catch(err => {
+          console.error('Error deleting charge:', err);
+          alert('Failed to delete charge. Please try again.');
+        });
+
+    },
+    postedRecord() {
+      this.visibleConfirmationToPost = true;
+    },
+    async confirmToPostThis(){
+      await this.updateCanvasCostStatus({ status: 'Posted' }, this.selectedOrderId)
+        .then(() => {
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Posted',
+            detail: 'The selected sales order has been posted.',
+            life: 1500
+          });
+          this.visibleConfirmationToPost = false;
+
+         
+
+        })
+        .catch(err => {
+          console.error('Error posting record:', err);
+          alert('Failed to post record. Please try again.');
+        });
+
+        await this.fetchCanvas();
+        this.canvassCostData = this.canvasCostList; 
+
+        await this.fetchCanvasHeaderDetails(this.selectedOrderId);
+        this.canvassCostHeaderDetails = this.canvasCostHeaderDetails;
+
+        this.isForDraft = this.canvassCostHeaderDetails.status === 'Draft' ? true : false;
+       
+      }
 
   }
+  
 }
 </script>
