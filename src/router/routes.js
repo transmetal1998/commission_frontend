@@ -50,6 +50,12 @@ const generateRoutes = (moduleStore) => {
           // meta: { requiresAuth: true },
         },
         {
+          path: '/salescore/:salesPersonUser',
+          name: "SalesCoreDetail",
+          component: () => import('../pages/salesCommission/salesPersonCommissionDetail.vue'),
+          // meta: { requiresAuth: true },
+        },
+        {
           path: '/salesparameter/hurdle',
           component: () => import('../pages/salesParameter/hurdle.vue'),
           // meta: { requiresAuth: true },

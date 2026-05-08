@@ -8,7 +8,7 @@
 
       <Toast position="top-right" />
 
-      <div class="relative z-10 flex flex-col md:flex-row items-stretch justify-center w-full max-w-[650px] shadow-[0_30px_60px_rgba(0,0,0,0.5)] rounded-[24px] overflow-hidden fade-in-up bg-white">
+      <div class="relative z-10 flex flex-col md:flex-row items-stretch justify-center w-full max-w-[650px] min-h-[420px] shadow-[0_30px_60px_rgba(0,0,0,0.5)] rounded-[8px] overflow-hidden fade-in-up bg-white">
         
         <div class="w-full md:w-5/12 bg-white/95 flex flex-col items-center justify-center p-6 border-b md:border-b-0 md:border-r border-gray-100">
           <div class="flex flex-col items-center space-y-4">
@@ -26,13 +26,13 @@
         >
           <div class="p-6 md:p-8 flex-grow">
             <div class="text-center mb-8">
-              <h2 class="text-[22px] font-black text-gray-900 tracking-wider uppercase">Commission System</h2>
-              <div class="w-6 h-0.5 bg-[#C6011F] mx-auto mt-1 rounded-full"></div>
+              <h2 class="text-[22px] font-black text-gray-900">KOMISYON SYS</h2>
+              <!-- <div class="w-6 h-0.5 bg-[#C6011F] mx-auto mt-1 rounded-full"></div> -->
             </div>
 
             <form @submit.prevent="submitLogin" class="space-y-6">
               <FloatLabel>
-                <InputText id="username" v-model="loginForm.username" class="w-full custom-input" :disabled="isLocked" />
+                <InputText id="username" size="small" v-model="loginForm.username" class="w-full custom-input" :disabled="isLocked" />
                 <label for="username" class="font-bold text-gray-400 ml-1 text-xs">Username</label>
               </FloatLabel>
 
@@ -48,6 +48,13 @@
                 :style="isLocked ? 'background-color: #94a3b8;' : 'background-color: #C6011F;'"
                 :loading="loading"
               />
+
+              <hr>
+
+              <span class="text-center text-gray-500 text-xs font-medium block mt-4">
+                <small>Login your AD account</small>
+              </span>
+
             </form>
 
             
@@ -82,6 +89,179 @@
     </div>
   </div>
 </template>
+<script>
+import { useAuthStore } from '@/stores/auth/authStore';
+
+// Assets
+import BackgroundImage from '@/assets/bg.jpg';
+import FdcLogo from '@/assets/fdc.png';
+import CfiLogo from '@/assets/cfi.png';
+
+export default {
+  name: 'LoginView',
+
+  data() {
+    return {
+      BackgroundImage,
+      FdcLogo,
+      CfiLogo,
+
+      authStore: null,
+
+      loginForm: {
+        username: '',
+        password: ''
+      },
+
+      loading: false,
+      showModal: false,
+      isSuccess: false,
+      isLocked: false,
+      modalMessage: '',
+      failedAttempts: 0,
+      lockdownTimer: 0,
+      triggerShake: false,
+
+      timerInterval: null
+    };
+  },
+
+  computed: {
+    modalHeader() {
+      return this.isLocked
+        ? 'Security Breach'
+        : this.isSuccess
+          ? 'Access Granted'
+          : 'Access Denied';
+    },
+
+    modalTitle() {
+      return this.isLocked
+        ? 'Account Locked'
+        : this.isSuccess
+          ? 'Welcome'
+          : 'Error';
+    },
+
+    statusClass() {
+      return this.isLocked
+        ? 'bg-orange-100 text-orange-600'
+        : this.isSuccess
+          ? 'bg-green-100 text-green-600'
+          : 'bg-red-100 text-red-600';
+    },
+
+    statusIcon() {
+      return this.isLocked
+        ? 'pi pi-lock'
+        : this.isSuccess
+          ? 'pi pi-check'
+          : 'pi pi-times-circle';
+    }
+  },
+
+  mounted() {
+    this.authStore = useAuthStore();
+
+    const unlockTime = localStorage.getItem('commission_unlock_time');
+
+    if (unlockTime) {
+      const remaining = Math.ceil(
+        (parseInt(unlockTime) - Date.now()) / 1000
+      );
+
+      if (remaining > 0) {
+        this.lockdownTimer = remaining;
+        this.startLockout();
+      }
+    }
+  },
+
+  beforeUnmount() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+  },
+
+  methods: {
+    async submitLogin() {
+      if (this.isLocked) return;
+
+      this.loading = true;
+
+      try {
+        const response = await this.authStore.login(this.loginForm);
+
+        if (response?.data?.token) {
+          this.isSuccess = true;
+          this.modalMessage =
+            'Authenticating... Redirecting to dashboard.';
+          this.showModal = true;
+
+          setTimeout(() => {
+            this.$router.push('/dashboard');
+          }, 1500);
+        } else {
+          this.handleFailure();
+        }
+      } catch (err) {
+        this.handleFailure();
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    handleFailure() {
+      this.failedAttempts++;
+
+      this.triggerShake = true;
+
+      setTimeout(() => {
+        this.triggerShake = false;
+      }, 500);
+
+      if (this.failedAttempts >= 3) {
+        const unlockTime = Date.now() + 10 * 1000;
+
+        localStorage.setItem(
+          'commission_unlock_time',
+          unlockTime.toString()
+        );
+
+        this.lockdownTimer = 10;
+
+        this.startLockout();
+      } else {
+        this.isSuccess = false;
+
+        this.modalMessage = `Access denied. ${
+          3 - this.failedAttempts
+        } attempts remaining.`;
+
+        this.showModal = true;
+      }
+    },
+
+    startLockout() {
+      this.isLocked = true;
+      this.showModal = true;
+
+      this.timerInterval = setInterval(() => {
+        if (this.lockdownTimer > 0) {
+          this.lockdownTimer--;
+        } else {
+          this.isLocked = false;
+          this.showModal = false;
+
+          localStorage.removeItem('commission_unlock_time');
+
+          clearInterval(this.timerInterval);
+        }
+      }, 1000);
+    }
+  }
+};
+</script>
 
 <style scoped>
 /* Improved FloatLabel Fix */
@@ -142,92 +322,3 @@
 
 :deep(.custom-dialog) { border-radius: 20px; overflow: hidden; border: none; }
 </style>
-
-<script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth/authStore';
-
-// Assets
-import BackgroundImage from '@/assets/bg.jpg';
-import FdcLogo from '@/assets/fdc.png';
-import CfiLogo from '@/assets/cfi.png';
-
-const router = useRouter();
-const authStore = useAuthStore();
-
-const loginForm = reactive({ username: '', password: '' });
-const loading = ref(false);
-const showModal = ref(false);
-const isSuccess = ref(false);
-const isLocked = ref(false);
-const modalMessage = ref('');
-const failedAttempts = ref(0);
-const lockdownTimer = ref(0);
-const triggerShake = ref(false);
-let timerInterval = null;
-
-const modalHeader = computed(() => isLocked.value ? 'Security Breach' : (isSuccess.value ? 'Access Granted' : 'Access Denied'));
-const modalTitle = computed(() => isLocked.value ? 'Account Locked' : (isSuccess.value ? 'Welcome' : 'Error'));
-const statusClass = computed(() => isLocked.value ? 'bg-orange-100 text-orange-600' : (isSuccess.value ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'));
-const statusIcon = computed(() => isLocked.value ? 'pi pi-lock' : (isSuccess.value ? 'pi pi-check' : 'pi pi-times-circle'));
-
-onMounted(() => {
-  const unlockTime = localStorage.getItem('commission_unlock_time');
-  if (unlockTime) {
-    const remaining = Math.ceil((parseInt(unlockTime) - Date.now()) / 1000);
-    if (remaining > 0) {
-      lockdownTimer.value = remaining;
-      startLockout();
-    }
-  }
-});
-
-onUnmounted(() => { if (timerInterval) clearInterval(timerInterval); });
-
-const submitLogin = async () => {
-  if (isLocked.value) return;
-  loading.value = true;
-  try {
-    const response = await authStore.login(loginForm);
-    if (response?.data?.token) {
-      isSuccess.value = true;
-      modalMessage.value = "Authenticating... Redirecting to dashboard.";
-      showModal.value = true;
-      setTimeout(() => router.push('/dashboard'), 1500);
-    } else { handleFailure(); }
-  } catch (err) { handleFailure(); }
-  finally { loading.value = false; }
-};
-
-const handleFailure = () => {
-  failedAttempts.value++;
-  triggerShake.value = true;
-  setTimeout(() => triggerShake.value = false, 500);
-  if (failedAttempts.value >= 3) {
-    const unlockTime = Date.now() + (10 * 1000);
-    localStorage.setItem('commission_unlock_time', unlockTime.toString());
-    lockdownTimer.value = 10;
-    startLockout();
-  } else {
-    isSuccess.value = false;
-    modalMessage.value = `Access denied. ${3 - failedAttempts.value} attempts remaining.`;
-    showModal.value = true;
-  }
-};
-
-const startLockout = () => {
-  isLocked.value = true;
-  showModal.value = true;
-  timerInterval = setInterval(() => {
-    if (lockdownTimer.value > 0) {
-      lockdownTimer.value--;
-    } else {
-      isLocked.value = false;
-      showModal.value = false;
-      localStorage.removeItem('commission_unlock_time');
-      clearInterval(timerInterval);
-    }
-  }, 1000);
-};
-</script>

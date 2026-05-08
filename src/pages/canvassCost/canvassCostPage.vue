@@ -22,7 +22,7 @@
             style="width: 100%; height: 430px"
             :dt="{
                 bar: {
-                    background: '#cccccc'
+                    background: '#e5e7eb'
                 }
             }"
         >
@@ -1040,6 +1040,18 @@ export default {
       this.visibleConfirmationToPost = true;
     },
     async confirmToPostThis(){
+
+      if(this.assignAm === null || this.assignPm === null) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Warning',
+          detail: 'Please assign Account Manager and Product Manager before posting.',
+          life: 1500
+        });
+        this.visibleConfirmationToPost = false;
+        return;
+      }
+
       await this.updateCanvasCostStatus({ status: 'Posted' }, this.selectedOrderId)
         .then(() => {
           this.$toast.add({
